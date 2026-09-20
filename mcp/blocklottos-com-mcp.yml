@@ -1,0 +1,269 @@
+generated: '2026-09-19'
+method: searched
+status: published
+source: https://blocklottos.com/git/blocklottos-agent-tools.git (cloned 2026-09-19, HEAD e2f3cb6 2026-09-09, 3 commits)
+  + https://pypi.org/pypi/blocklottos-mcp/json + https://registry.modelcontextprotocol.io/v0/servers?search=blocklottos
+  + https://blocklottos.com/agent-tools/
+docs: https://blocklottos.com/agent-tools/
+summary: 'Block Lottos ships ONE MCP server, "Block Lottos" (blocklottos_mcp, MIT), as a local stdio Python package
+  - on PyPI as blocklottos-mcp (1.0.2, released 2026-09-10) and as a self-hosted public Git repository. It is listed
+  in the official MCP registry as com.blocklottos/blocklottos (stdio, pypi). There is NO hosted/remote endpoint:
+  the site has no /mcp route (404), no mcp.blocklottos.com host (NXDOMAIN) and no .well-known/mcp.json (404). The
+  server wraps the public REST API (client.py, base https://blocklottos.com) with 10 tools and 2 resources, is Base-only
+  for writes, requires no credentials, and hard-fails if a prepared transaction does not match the published Base
+  contract/USDC/1-ticket shape.'
+deployment:
+  mode: local-stdio
+  endpoint: null
+  install: uvx --from git+https://blocklottos.com/git/blocklottos-agent-tools.git blocklottos-mcp
+  install_alternatives:
+  - pip install blocklottos-mcp  (PyPI 1.0.2, console script blocklottos-mcp)
+  - python3.12 -m venv .venv && .venv/bin/python -m pip install -e . && .venv/bin/blocklottos-mcp  (from the Git
+    checkout)
+  package: https://pypi.org/project/blocklottos-mcp/
+  package_git: https://blocklottos.com/git/blocklottos-agent-tools.git
+  auth: none
+  verified: searched
+  note: 'verified: searched, not probed - the tool list and input schemas below are read from src/blocklottos_mcp/server.py
+    in the cloned source (10 @mcp.tool functions, EXPECTED_TOOL_NAMES asserted by tests/test_server.py), corroborated
+    by the README tool list and the PyPI/registry metadata; no live tools/list round-trip was run because the sandbox
+    lacks uvx and an mcp>=2.0 runtime. The registry entry names repository https://github.com/scosemicolon/blocklottos-agent-tools,
+    which returned 404 on 2026-09-19; the self-hosted Git at blocklottos.com is the reachable source (dumb-HTTP
+    transport, full clone works, shallow clone does not).'
+registry:
+  name: com.blocklottos/blocklottos
+  registry: https://registry.modelcontextprotocol.io
+  version_listed: 1.0.1
+  published: '2026-09-10'
+  transport: stdio
+  package: pypi:blocklottos-mcp
+  note: README in the Git HEAD still carries the older mcp-name io.github.scosemicolon/blocklottos; the PyPI 1.0.2
+    README carries com.blocklottos/blocklottos.
+server:
+  name: Block Lottos
+  version: 1.0.0 (git HEAD) / 1.0.2 (PyPI)
+  transport: stdio
+  framework: mcp>=2.0 MCPServer (Python >=3.10), httpx
+  base_url: https://blocklottos.com
+  website_url: https://blocklottos.com
+  license: MIT
+  instructions_excerpt: Base Future Ledger purchases cost exactly 1 USDC using official Base USDC ... Read tools
+    are safe. get_or_create_referral writes a free referral record but moves no funds. prepare_ticket_purchase only
+    returns unsigned, exact one-ticket Base transactions; it never signs or broadcasts ... Never report a purchase
+    as complete until confirm_ticket_purchase returns confirmed=true.
+tool_count: 10
+tools:
+- name: get_capabilities
+  category: read
+  description: Read the authoritative Base game, 1-USDC price, gas, workflow, payout, and safety details.
+  annotations: &id001
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: true
+    openWorldHint: true
+  inputSchema:
+    type: object
+    properties: {}
+    required: []
+  source: src/blocklottos_mcp/server.py
+- name: get_jackpot
+  category: read
+  description: 'Read the effective jackpot. Minimum: 100 USDC on Base or 100 POL on Polygon; higher live jackpot
+    applies.'
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties:
+      chain:
+        type: string
+        enum:
+        - base
+        - polygon
+        default: base
+    required: []
+  source: src/blocklottos_mcp/server.py
+- name: get_stats
+  category: read
+  description: Read the current Base draw number, jackpot, next draw time, and contract metadata.
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties: {}
+    required: []
+  source: src/blocklottos_mcp/server.py
+- name: get_draw_history
+  category: read
+  description: Read one to ten completed Base draws, or begin at a specified public draw ID.
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties:
+      limit:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 10
+      draw_id:
+        type:
+        - integer
+        - 'null'
+        default: null
+    required: []
+  source: src/blocklottos_mcp/server.py
+- name: get_draw_proof
+  category: read
+  description: Read the public proof for a Base draw. Omit draw_id for the current public proof when available.
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties:
+      draw_id:
+        type:
+        - integer
+        - 'null'
+        default: null
+    required: []
+  source: src/blocklottos_mcp/server.py
+- name: get_wallet_tickets
+  category: read
+  description: Read a Base wallet's tickets for the active draw. This does not move funds.
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties:
+      wallet_address:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{40}$
+    required:
+    - wallet_address
+  source: src/blocklottos_mcp/server.py
+- name: check_wallet_prizes
+  category: read
+  description: Check whether a Base wallet has an outstanding failed automatic prize payout.
+  annotations: *id001
+  inputSchema:
+    type: object
+    properties:
+      wallet_address:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{40}$
+    required:
+    - wallet_address
+  source: src/blocklottos_mcp/server.py
+- name: get_or_create_referral
+  category: write_no_funds
+  description: Create or retrieve a free referral ID tied to an EVM payout wallet. No funds move and the wallet
+    cannot later be replaced by this tool.
+  annotations: &id002
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: true
+    openWorldHint: true
+  inputSchema:
+    type: object
+    properties:
+      wallet_address:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{40}$
+      agent_id:
+        type:
+        - string
+        - 'null'
+        maxLength: 80
+    required:
+    - wallet_address
+  source: src/blocklottos_mcp/server.py
+- name: prepare_ticket_purchase
+  category: financial_preparation
+  description: Prepare exactly one unsigned 1-USDC Base ticket purchase. It never signs or broadcasts. Obtain owner
+    approval or apply a narrow owner policy before submitting returned wallet transactions.
+  annotations:
+    readOnlyHint: false
+    destructiveHint: true
+    idempotentHint: false
+    openWorldHint: true
+  inputSchema:
+    type: object
+    properties:
+      wallet_address:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{40}$
+      numbers:
+        type: array
+        items:
+          type: integer
+          minimum: 1
+          maximum: 49
+        minItems: 6
+        maxItems: 6
+        uniqueItems: true
+      idempotency_key:
+        type: string
+        pattern: ^[A-Za-z0-9._:-]{8,128}$
+      max_price_usdc:
+        type: string
+        default: '1.00'
+        note: client rejects anything other than exactly 1 USDC
+      referral_id:
+        type:
+        - string
+        - 'null'
+      valid_until:
+        type:
+        - string
+        - 'null'
+        format: date-time
+      agent_id:
+        type:
+        - string
+        - 'null'
+        maxLength: 80
+    required:
+    - wallet_address
+    - numbers
+    - idempotency_key
+  source: src/blocklottos_mcp/server.py
+- name: confirm_ticket_purchase
+  category: write_no_funds
+  description: Verify the Base receipt, sender, contract, method, and TicketPurchased event. This is the only completion
+    check.
+  annotations: *id002
+  inputSchema:
+    type: object
+    properties:
+      tx_hash:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{64}$
+      wallet_address:
+        type: string
+        pattern: ^0x[0-9a-fA-F]{40}$
+      execution_id:
+        type:
+        - string
+        - 'null'
+        maxLength: 80
+      agent_id:
+        type:
+        - string
+        - 'null'
+        maxLength: 80
+    required:
+    - tx_hash
+    - wallet_address
+  source: src/blocklottos_mcp/server.py
+resources:
+- uri: blocklottos://agent-guide
+  mime_type: text/plain
+  backed_by: GET https://blocklottos.com/agents.txt
+- uri: blocklottos://openapi
+  mime_type: application/json
+  backed_by: GET https://blocklottos.com/openapi.json
+safety_model:
+- 'Server-side (in the MCP client code): every prepared purchase is re-validated locally - chain 8453, contract
+  0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a, USDC 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, exactly 1,000,000
+  units, approve() selector 0x095ea7b3 scoped to one ticket, buyTicket calldata decoded back to the requested numbers
+  - and rejected with "failed local safety validation" on any mismatch.'
+- max_price_usdc is pinned to exactly 1 USDC by the MCP even though the REST endpoint accepts other caps.
+- 'Financial tools carry destructiveHint: true / idempotentHint: false; reads carry readOnlyHint: true.'
+- The package never handles private keys; signing and broadcasting happen in the caller's wallet.
+crosswalk: mcp/blocklottos-com-tool-crosswalk.yml

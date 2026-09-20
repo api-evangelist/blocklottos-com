@@ -1,0 +1,82 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Block Lottos API
+  version: 1.0.0
+  description: >-
+    OpenAPI Overlay 1.0.0 capturing API Evangelist's enhancements to openapi/blocklottos-com-openapi.yml
+    (harvested verbatim from https://blocklottos.com/openapi.json, 2026-09-19). The original is never
+    mutated; apply this overlay to obtain the enhanced view. Every addition is grounded in the
+    provider's own docs (https://blocklottos.com/api-docs) or in observed live behaviour.
+extends: ../openapi/blocklottos-com-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+actions:
+  - target: $.info
+    description: Provenance of the harvested document.
+    update:
+      x-apievangelist:
+        harvested: '2026-09-19'
+        source: https://blocklottos.com/openapi.json
+        last_modified: '2026-09-10T17:34:59Z'
+        md5: d84270d63dcae8577accf4c9e5118662
+  - target: $.tags
+    description: >-
+      Declare the two tags operations already use but the document never declares (Agents on 4
+      operations, Affiliate on 1) so tag-driven tooling and the per-tag split see them.
+    update:
+      - name: Agents
+        description: Base-first non-custodial agent flow - capabilities, referral enrollment, one-ticket preparation, on-chain confirmation.
+      - name: Affiliate
+        description: Shared human/agent multi-chain affiliate profile (5% of referred ticket price, paid from the operations share).
+  - target: $.servers[0]
+    description: Note that the API base is the apex domain; both clean and legacy .php paths are served.
+    update:
+      x-note: >-
+        Lottery reads are documented at https://blocklottos.com (clean URLs preferred, .php aliases
+        still served); the Advertising API is documented at https://blocklottos.com/api/ads/.
+  - target: $.paths['/api/ads/sizes'].get.responses['429']
+    description: Document the rate-limit signal the docs describe (Retry-After header + retry_after body field).
+    update:
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying (documented at /api-docs#ads-rate-limits).
+          schema: { type: integer }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+              retry_after: { type: integer, description: Seconds until the per-IP window resets. }
+  - target: $.paths['/api/lottery/agent-capabilities'].get.responses['429']
+    description: Same rate-limit signal on the agent capabilities endpoint (10 req/min/IP).
+    update:
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying (documented at /api-docs#lottery-rate-limits).
+          schema: { type: integer }
+  - target: $.paths['/api/jackpot.php'].get
+    description: Mark the .php form as the legacy alias; the docs say the clean URL is what bots and agents should use.
+    update:
+      x-legacy-alias-of: getLotteryJackpotAlias
+      x-note: Both forms work; /api/jackpot (getLotteryJackpotAlias) is preferred per /api-docs#lottery-overview.
+  - target: $.paths['/api/stats.php'].get
+    description: Mark the .php form as the legacy alias.
+    update:
+      x-legacy-alias-of: getLotteryStatsAlias
+      x-note: Both forms work; /api/stats (getLotteryStatsAlias) is preferred per /api-docs#lottery-overview.
+  - target: $.paths['/api/lottery/agent-purchase'].post
+    description: Surface the idempotency semantics and the agent identification headers the docs and CORS policy expose.
+    update:
+      x-idempotency:
+        mechanism: idempotency_key request-body field (required, 8-128 chars)
+        semantics: correlation between preparation and confirmation only; does NOT prevent duplicate wallet broadcasts
+        observed_cors_allow_headers: [Content-Type, X-BlockLottos-Agent, X-BlockLottos-Intent, Idempotency-Key]
+      x-reversibility: none - all ticket purchases are final once confirmed on chain (https://blocklottos.com/terms, section 4)
+  - target: $.paths['/api/lottery/agent-referral'].post
+    description: Point at the documented Bearer management token, which the document expresses only as a header parameter (no securitySchemes).
+    update:
+      x-authentication:
+        scheme: http bearer
+        token_prefix: blm_
+        applies_to: payout-wallet changes and private balance reads only; enrollment is wallet-signature (EIP-191 personal_sign) challenge/response

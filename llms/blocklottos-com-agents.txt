@@ -1,0 +1,68 @@
+# Block Lottos for AI Agents and Bots
+
+Block Lottos supports a Base-first, non-custodial agent purchase flow. Agents can read live data, obtain a free referral ID, prepare one ticket, sign and broadcast with their own wallet, verify the on-chain purchase, and monitor results.
+
+## Recommended game: Base Future Ledger
+- Chain: Base Mainnet (chain ID 8453)
+- Contract: `0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a`
+- Ticket payment currency: USDC — not ETH
+- Ticket price: 1 USDC
+- Official Base USDC token: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` (6 decimals)
+- Base ETH is required only for network gas
+- Numbers: 6 unique numbers from 1 to 49
+- Draw: Saturday at 16:00 UTC
+
+## Minimum winner payouts
+- Polygon Future Ledger: a valid winning ticket receives at least 100 POL.
+- Base Future Ledger: a valid winning ticket receives at least 100 USDC.
+- If a game’s current jackpot is higher than its 100-unit minimum, the higher amount applies.
+- This is a payout policy for a verified winning ticket, not a promise that any ticket will win.
+- Future games will publish their currency and minimum winner payout before launch.
+
+## Complete agent workflow
+1. Read live capabilities: GET https://blocklottos.com/api/lottery/agent-capabilities
+2. Optional free referral: POST https://blocklottos.com/api/lottery/agent-referral with `wallet_address` and optional `evm_wallet`, `solana_wallet`, and `cardano_wallet`. This is the same shared multi-chain affiliate profile used by humans.
+3. Prepare one ticket: POST https://blocklottos.com/api/lottery/agent-purchase with `wallet_address`, six `numbers`, `max_price_usdc`, optional `referral_id`, `idempotency_key`, `valid_until`, and optional `agent_id`.
+4. Sign and broadcast returned transactions using the agent-controlled or explicitly user-approved Base wallet. Submit the exact USDC approval only when `approval_required` is true; never use unlimited approval.
+5. Verify on chain: POST https://blocklottos.com/api/lottery/confirm-ticket-tx with `tx_hash`, `wallet_address`, and returned `execution_id`.
+6. Read tickets: GET https://blocklottos.com/api/lottery/tickets/{wallet}?chain=base
+7. Read the latest result: GET https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1
+
+Block Lottos never accepts private keys or seed phrases, never signs for the agent, and never broadcasts wallet transactions. An autonomous agent may use its own wallet and pre-authorised spending policy. Each API call prepares one ticket so an accidental request cannot create a hidden batch purchase, but this is not a one-ticket-per-agent restriction: the agent may buy additional tickets by making another one-ticket purchase call. Spending and ticket-count limits are chosen by the wallet owner, not imposed by Block Lottos. Use a fresh price check and unique idempotency key for each purchase. The idempotency key correlates preparation and confirmation; it does not prevent duplicate wallet broadcasts, so the wallet agent must submit each transaction at most once. Stop on any failed or unknown receipt.
+
+## Referrals
+- Commission: 5% of referred ticket price from the operations share; it does not reduce the jackpot.
+- Registering an agent referral costs 0 USDC and requires no wallet transaction. Request `action=challenge`, sign the exact message with an EVM identity wallet, then resubmit `challenge_id` and `signature`. Cardano is supported as a payout wallet.
+- Endpoint: POST https://blocklottos.com/api/lottery/agent-referral
+- Store the one-time `management_token` securely. Send it only as `Authorization: Bearer ...` when updating payout wallets or reading private balances.
+- Use the returned `referral_id` in the purchase request.
+
+## Live data — never rely on copied draw numbers
+- Capabilities: https://blocklottos.com/api/lottery/agent-capabilities
+- Jackpot: https://blocklottos.com/api/jackpot.php?chain=base
+- Stats and next draw: https://blocklottos.com/api/stats.php?chain=base
+- Latest result: https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1
+- Draw proof: https://blocklottos.com/api/lottery/draw-proof?chain=base
+- Prize status: https://blocklottos.com/api/lottery/check-prizes/{wallet}?chain=base
+
+## Installable MCP and cross-agent skill
+- Distribution page: https://blocklottos.com/agent-tools/
+- Canonical skill: https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md
+- Source archive: https://blocklottos.com/downloads/blocklottos-agent-tools-v1.0.0.zip
+- Public MCP Git source: https://blocklottos.com/git/blocklottos-agent-tools.git
+- MCP launch: `uvx --from git+https://blocklottos.com/git/blocklottos-agent-tools.git blocklottos-mcp`
+- The skill is compatible with Agent Skills-style runtimes including Hermes, OpenClaw, Claude Code, Codex, and Cursor.
+- Truthful framing: this is a weekly probability challenge and a lottery with a random draw, not a solvable equation. Mathematical analysis can select or compare six-number guesses but cannot reveal or guarantee future winning numbers.
+
+## Discovery and documentation
+- OpenAPI: https://blocklottos.com/openapi.json
+- API docs: https://blocklottos.com/api-docs
+- Agent manifest: https://blocklottos.com/.well-known/agent.json
+- Agent actions: https://blocklottos.com/.well-known/agent-actions.json
+- Affiliate manifest: https://blocklottos.com/.well-known/affiliate-program.json
+- AI plugin: https://blocklottos.com/.well-known/ai-plugin.json
+- LLM context: https://blocklottos.com/llms.txt
+
+## Safety
+Only participate when the wallet owner meets the legal-age requirement and lottery participation is permitted in their jurisdiction.
+Do not claim that any ticket will win, chase losses, exceed the wallet owner’s limits, or report purchase success before the confirmation endpoint verifies the receipt and TicketPurchased event. If a ticket is verified as a winner, use the documented minimum winner payout for that game.

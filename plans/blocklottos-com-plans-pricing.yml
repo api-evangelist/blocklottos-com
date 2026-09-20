@@ -1,0 +1,239 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Block Lottos
+providerId: blocklottos-com
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: probed
+source: GET https://blocklottos.com/api/ads/sizes (machine-readable price list, HTTP 200 application/json, probed
+  2026-09-19 - raw body saved as plans/blocklottos-com-ads-sizes.json); https://blocklottos.com/advertise; https://blocklottos.com/api-docs;
+  https://blocklottos.com/affiliate; https://blocklottos.com/about (80/20 split); https://blocklottos.com/terms
+sources:
+- https://blocklottos.com/api/ads/sizes
+- https://blocklottos.com/advertise
+- https://blocklottos.com/api-docs
+- https://blocklottos.com/affiliate
+- https://blocklottos.com/about
+tags:
+- Lottery
+- Advertising
+- Affiliate Marketing
+description: 'The API itself has no paid tier: every endpoint is free, key-less and per-IP rate limited. Money enters
+  in three places, each priced on chain in stablecoin or native token: lottery tickets (1 USDC on Base, 10 POL on
+  Polygon), banner advertising (a flat 1 USDC submit fee plus 85/140/250 USDC for 7/14/30 days, identical across
+  all four sizes as of 2026-09-19), and an affiliate programme paying 5% of referred ticket price. Prices are read
+  live from /api/ads/sizes and /api/lottery/agent-capabilities; the docs tell callers never to hard-code them.'
+plan_count: 4
+plans:
+- id: api-access
+  name: Public API access
+  type: free
+  price: 0
+  currency: USD
+  billing: none
+  description: No API key, no sign-up, no paid tier. Access is governed by per-IP rate limits (rate-limits/).
+  entries:
+  - label: Read endpoints
+    name: reads
+    type: metered
+    metric: requests
+    limit: 2
+    timeFrame: minute
+    unit: per IP
+    price: '0'
+  - label: Write/quote endpoints
+    name: writes
+    type: metered
+    metric: requests
+    limit: 10
+    timeFrame: minute
+    unit: per IP
+    price: '0'
+  - label: agent-referral
+    name: referral
+    type: metered
+    metric: requests
+    limit: 5
+    timeFrame: minute
+    unit: per IP
+    price: '0'
+- id: lottery-tickets
+  name: Lottery tickets
+  type: usage-based
+  description: One ticket = six unique numbers 1-49 for the next weekly draw. 80% of each ticket funds the jackpot,
+    20% operations (hardcoded in the contract per the FAQ). Minimum verified-winner payout 100 USDC (Base) / 100
+    POL (Polygon), higher live jackpot applies. Purchases are final.
+  entries:
+  - label: Base Future Ledger ticket
+    name: ticket_base
+    type: metered
+    metric: ticket
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 1 USDC (+ Base ETH gas)
+    geo: Base Mainnet 8453
+  - label: Polygon Fortune Ledger ticket
+    name: ticket_polygon
+    type: metered
+    metric: ticket
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 10 POL (+ gas)
+    geo: Polygon 137
+- id: advertising
+  name: Banner advertising
+  type: usage-based
+  description: Quote-first USDC placements on any supported network (polygon default; base, arbitrum, optimism,
+    ethereum, avalanche, bnb). Submit fee is non-refundable regardless of review; placement fee non-refundable once
+    activated. Manual review "usually 24-48 hours".
+  observed: '2026-09-19'
+  entries:
+  - label: Submission fee (any size)
+    name: submit_fee
+    type: metered
+    metric: submission
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 1 USDC
+  - label: Leaderboard (728×90) — Desktop top/bottom - 7d
+    name: 728x90_7d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 85 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Leaderboard (728×90) — Desktop top/bottom - 14d
+    name: 728x90_14d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 140 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Leaderboard (728×90) — Desktop top/bottom - 30d
+    name: 728x90_30d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 250 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Medium Rectangle (300×250) — Most popular - 7d
+    name: 300x250_7d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 85 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Medium Rectangle (300×250) — Most popular - 14d
+    name: 300x250_14d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 140 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Medium Rectangle (300×250) — Most popular - 30d
+    name: 300x250_30d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 250 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Mobile Banner (320×50) — Mobile - 7d
+    name: 320x50_7d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 85 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Mobile Banner (320×50) — Mobile - 14d
+    name: 320x50_14d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 140 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Mobile Banner (320×50) — Mobile - 30d
+    name: 320x50_30d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 250 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Wide Skyscraper (160×600) — Sidebar - 7d
+    name: 160x600_7d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 85 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Wide Skyscraper (160×600) — Sidebar - 14d
+    name: 160x600_14d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 140 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  - label: Wide Skyscraper (160×600) — Sidebar - 30d
+    name: 160x600_30d
+    type: metered
+    metric: placement
+    limit: -1
+    timeFrame: usage
+    unit: 1
+    price: 250 USDC
+    discount_pct: 0
+    discount_expires: '2026-07-24T20:00:00+00:00'
+  note: discount_expires (2026-07-24) is in the past and discount_pct is 0 on every size - no promotion was active
+    at probe time.
+- id: affiliate
+  name: Affiliate programme
+  type: revenue-share
+  description: 'One wallet-based profile for humans, bots, agents and LLMs. 5% of the ticket price on every referred
+    ticket, paid from the operations share (does not reduce the jackpot); enrollment costs 0 USDC. Payout wallets:
+    EVM (Polygon + Base), Solana, Cardano.'
+  entries:
+  - label: Commission on referred tickets
+    name: commission
+    type: revenue-share
+    metric: ticket price
+    price: 5%
+    currencies:
+    - POL
+    - USDC

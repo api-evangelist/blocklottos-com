@@ -1,0 +1,129 @@
+generated: '2026-09-19'
+method: searched
+source: 'openapi/blocklottos-com-openapi.yml (securitySchemes, responses, parameters), https://blocklottos.com/api-docs,
+  https://blocklottos.com/faq, https://blocklottos.com/draw-proof, live probes 2026-09-19 (well-known/, security/),
+  a2a/, mcp/. Entries marked evidence_kind: derived come from the contract; searched from docs; probed from live
+  responses.'
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: 'openapi: 3.1.0 at https://blocklottos.com/openapi.json; parses; 20 operations, unique operationIds,
+    2xx+4xx on every operation'
+  evidence_kind: derived
+- id: oauth2
+  conforms: false
+  evidence: no securitySchemes in the OpenAPI; /.well-known/oauth-authorization-server 404; reads are key-less
+  evidence_kind: probed
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration 404
+  evidence_kind: probed
+- id: rfc9728-protected-resource
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource 404
+  evidence_kind: probed
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog 404
+  evidence_kind: probed
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt and /security.txt both 404
+  evidence_kind: probed
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'error responses are application/json with a custom envelope: {"status":"error","message":"..."} on
+    lottery/agent endpoints (observed live on 405), {"error":"..."} on the Advertising API (docs #ads-errors); no
+    application/problem+json anywhere in the spec'
+  evidence_kind: derived
+- id: rfc6585-429-retry-after
+  conforms: true
+  evidence: 'docs #ads-rate-limits / #lottery-rate-limits: "When rate limited, the response includes a retry_after
+    field (in seconds) and an HTTP Retry-After header"; 429 declared on getAdSizes and getBaseAgentCapabilities
+    in the spec'
+  evidence_kind: searched
+- id: cors
+  conforms: true
+  evidence: 'live: Access-Control-Allow-Origin: * on every /api response; allow-headers include Idempotency-Key,
+    X-BlockLottos-Agent, X-BlockLottos-Intent on the agent endpoints'
+  evidence_kind: probed
+- id: hsts
+  conforms: true
+  evidence: 'strict-transport-security: max-age=31536000; includeSubDomains (security/blocklottos-com-domain-security.yml)'
+  evidence_kind: probed
+- id: pagination
+  conforms: partial
+  evidence: getLotteryDrawHistory takes limit (1-10, default 1) and draw_id as a starting point; no cursor/next
+    token; tickets, prizes and ads-by-wallet lists are unpaginated
+  evidence_kind: derived
+- id: idempotency
+  conforms: partial
+  evidence: 'prepareBaseAgentPurchase requires an idempotency_key body field that the docs describe as correlation-only
+    ("does not prevent duplicate wallet broadcasts"); affiliate-program.json declares agent-referral creation idempotent
+    (create-or-load); no Idempotency-Key header is documented although CORS allows it. See conventions/ idempotency.coverage:
+    partial'
+  evidence_kind: derived
+- id: a2a-agent-card
+  conforms: false
+  grade: flavored
+  evidence: card served only at legacy /.well-known/agent.json; capabilities is an object and skills an array, but
+    protocolVersion is absent and url is the homepage rather than an A2A endpoint (a2a/blocklottos-com-a2a.yml)
+  evidence_kind: probed
+- id: mcp
+  conforms: true
+  evidence: first-party stdio MCP server (mcp>=2.0 MCPServer) on PyPI as blocklottos-mcp 1.0.2 and in registry.modelcontextprotocol.io
+    as com.blocklottos/blocklottos; no remote endpoint (mcp/blocklottos-com-mcp.yml)
+  evidence_kind: searched
+- id: agent-skills-skill-md
+  conforms: true
+  evidence: provider-authored SKILL.md with name/description/license/metadata frontmatter at https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md
+    (200); provider states it "follows the open Agent Skills SKILL.md format"
+  evidence_kind: searched
+- id: llms-txt
+  conforms: true
+  evidence: https://blocklottos.com/llms.txt 200 text/plain, markdown sections with links (llms/)
+  evidence_kind: probed
+- id: openai-ai-plugin-manifest
+  conforms: true
+  evidence: /.well-known/ai-plugin.json 200, schema_version v1, api.type openapi -> /openapi.json, auth.type none
+    (well-known/)
+  evidence_kind: probed
+- id: apis-json
+  conforms: false
+  evidence: /apis.json, /.well-known/apis.json, /apis.yml all 404
+  evidence_kind: probed
+- id: json-api
+  conforms: false
+  evidence: plain JSON objects with status/message keys; no JSON:API media type
+  evidence_kind: derived
+- id: erc-20-approve-transfer
+  conforms: true
+  domain: web3 / on-chain payments
+  evidence: 'CONTRACT: paths./api/lottery/build-ticket-tx.post response example carries payment_token (Base USDC),
+    approval_required and approval_transaction.data 0x095ea7b3... (ERC-20 approve selector); paths./api/ads/submit.post
+    response example carries payment.tx.data 0xa9059cbb... (ERC-20 transfer selector) against usdc_contract. The
+    provider''s own MCP client (client.py) asserts the same selectors and a one-ticket approval amount of 1,000,000
+    units'
+  evidence_kind: derived
+  note: 'Recorded as the domain-standard signature for this market: tickets and ad fees are paid by standard ERC-20
+    approve/transfer calls that any EVM wallet or agent already speaks, not a bespoke payment rail.'
+- id: eip-1193-eth-sendtransaction
+  conforms: true
+  domain: web3 wallet interface
+  evidence: 'live GET /api/lottery/agent-capabilities workflow step 4: action sign_and_broadcast, rpc_method eth_sendTransaction;
+    docs #agent-base-workflow'
+  evidence_kind: probed
+- id: chainlink-vrf
+  conforms: unverified
+  domain: lottery randomness
+  evidence: FAQ states "Winning numbers are generated using Chainlink VRF"; the live /draw-proof page and the draw-proof
+    API instead describe algorithm BlockLottosCommitRevealV1 (cutoff commitment + revealed seed + EVM block anchor
+    + SHA-256 stream). Both claims are the provider's; the contract itself was not inspected, so no conformance
+    is asserted either way
+  evidence_kind: searched
+observations:
+- No securitySchemes are declared even though POST /api/lottery/agent-referral documents a Bearer blm_ management
+  token as a header parameter - tooling that reads securitySchemes sees an unauthenticated API.
+- Tags Agents and Affiliate are used by 5 operations but not declared in tags[] (fixed in overlays/).
+- 'No components.schemas: every schema is inline, so there is no reusable data model in the contract (data-model/
+  is derived from inline shapes and id fields).'

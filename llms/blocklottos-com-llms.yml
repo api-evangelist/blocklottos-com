@@ -1,0 +1,23 @@
+generated: '2026-09-19'
+method: searched
+source: https://blocklottos.com/llms.txt
+files:
+- file: llms/blocklottos-com-llms.txt
+  url: https://blocklottos.com/llms.txt
+  http_status: 200
+  content_type: text/plain
+  bytes: 6478
+  note: 'Saved verbatim. A provider-authored "Base-first agent context" in llms.txt form: canonical game facts,
+    the 6-step non-custodial workflow, referral flow, live endpoints, installable tools and a safety section. Every
+    URL it names was fetched this run and answered 200 except /api/lottery/draw-proof (404 JSON "No public draw
+    proof is available for this draw yet", a data state rather than a dead link).'
+- file: llms/blocklottos-com-agents.txt
+  url: https://blocklottos.com/agents.txt
+  http_status: 200
+  content_type: text/plain
+  note: Companion agents.txt saved verbatim (no canonical pointer type exists for it; referenced here and from the
+    agent card entrypoints.agents_txt).
+llms_full:
+  url: https://blocklottos.com/llms-full.txt
+  http_status: 404
+  note: No llms-full.txt is published; nothing to gitignore.

@@ -1,0 +1,160 @@
+{
+  "schema_version": "2026-09-08",
+  "name": "Block Lottos Agent Actions",
+  "description": "Base-first actions for agents to read, refer, purchase, verify and monitor Base Future Ledger tickets.",
+  "homepage": "https://blocklottos.com",
+  "updated_at": "2026-09-08",
+  "recommended_chain": "base",
+  "base_game": {
+    "name": "Base Future Ledger",
+    "chain_id": 8453,
+    "ticket_price": "1 USDC",
+    "ticket_currency": "USDC",
+    "payment_token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "contract": "0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a",
+    "gas_currency": "ETH",
+    "gas_note": "ETH pays network gas only.",
+    "minimum_winner_payout": "100 USDC",
+    "higher_live_jackpot_applies": true
+  },
+  "rules": [
+    "Only participate when the wallet owner meets the legal-age requirement and lottery participation is permitted in their jurisdiction.",
+    "A verified winning Base ticket receives at least 100 USDC and a verified winning Polygon ticket receives at least 100 POL; a higher current jackpot applies when it exceeds the minimum.",
+    "Fetch live capabilities before each purchase.",
+    "Use an agent-controlled or explicitly user-approved wallet; the server never stores private keys or signs.",
+    "Use exact one-ticket approval, max_price_usdc, valid_until and idempotency_key.",
+    "The idempotency key is correlation-only and does not prevent duplicate wallet broadcasts; submit each returned transaction at most once.",
+    "Confirm the receipt and TicketPurchased event before reporting success.",
+    "Do not claim that any ticket will win, chase losses, exceed owner limits, or promise earnings."
+  ],
+  "actions": [
+    {
+      "id": "get-base-agent-capabilities",
+      "method": "GET",
+      "url": "https://blocklottos.com/api/lottery/agent-capabilities",
+      "purpose": "Read live Base price, jackpot, draw timing, endpoints and safety policy."
+    },
+    {
+      "id": "get-or-create-base-referral",
+      "method": "POST",
+      "url": "https://blocklottos.com/api/lottery/agent-referral",
+      "body": {
+        "action": "challenge | manage",
+        "primary_chain": "evm",
+        "connected_wallet": "wallet on primary_chain",
+        "wallet_address": "backward-compatible EVM identity (optional)",
+        "challenge_id": "returned by challenge step",
+        "signature": "signature over exact challenge message",
+        "evm_wallet": "optional after ownership proof",
+        "solana_wallet": "optional after ownership proof",
+        "cardano_wallet": "optional payout wallet after ownership proof",
+        "agent_id": "optional"
+      },
+      "purpose": "Request a free ownership challenge, sign it with the EVM identity wallet, then securely create/recover the shared profile. Store the one-time management token and use it as Authorization: Bearer for private monitoring or later payout-wallet changes."
+    },
+    {
+      "id": "prepare-base-ticket-purchase",
+      "method": "POST",
+      "url": "https://blocklottos.com/api/lottery/agent-purchase",
+      "body": {
+        "wallet_address": "0x...",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "max_price_usdc": "1.00",
+        "referral_id": "optional",
+        "idempotency_key": "unique-per-wallet-and-draw",
+        "valid_until": "ISO-8601",
+        "agent_id": "optional"
+      },
+      "purpose": "Return exact one-ticket USDC approval if needed and unsigned Base ticket transaction."
+    },
+    {
+      "id": "confirm-base-ticket-purchase",
+      "method": "POST",
+      "url": "https://blocklottos.com/api/lottery/confirm-ticket-tx",
+      "body": {
+        "tx_hash": "0x...",
+        "wallet_address": "0x...",
+        "execution_id": "returned value",
+        "agent_id": "optional"
+      },
+      "purpose": "Verify Base success, sender, contract, method and TicketPurchased event; record private attribution."
+    },
+    {
+      "id": "check-base-tickets",
+      "method": "GET",
+      "url_template": "https://blocklottos.com/api/lottery/tickets/{wallet}?chain=base",
+      "purpose": "Read active-draw tickets."
+    },
+    {
+      "id": "check-base-result",
+      "method": "GET",
+      "url": "https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1",
+      "purpose": "Read latest live Base result."
+    },
+    {
+      "id": "check-base-prizes",
+      "method": "GET",
+      "url_template": "https://blocklottos.com/api/lottery/check-prizes/{wallet}?chain=base",
+      "purpose": "Check failed on-chain contract transfer status. Use the published winner payout fields for the complete minimum and payable amount."
+    },
+    {
+      "id": "developer-discovery",
+      "method": "LINK",
+      "url": "https://blocklottos.com/openapi.json",
+      "supporting_urls": [
+        "https://blocklottos.com/api-docs",
+        "https://blocklottos.com/agents.txt",
+        "https://blocklottos.com/llms.txt"
+      ]
+    }
+  ],
+  "bounded_recurring_play": {
+    "server_custody": false,
+    "one_ticket_per_call": true,
+    "multiple_purchase_calls_allowed": true,
+    "owner_defined_limits": true,
+    "server_max_tickets_per_draw": null,
+    "explanation": "One ticket per call prevents accidental batch purchases. Agents may make additional one-ticket purchase calls for as many tickets as the wallet owner permits.",
+    "stop_on": [
+      "price limit",
+      "expired intent",
+      "insufficient USDC",
+      "failed or unknown receipt"
+    ]
+  },
+  "live_draw_data": {
+    "latest": "https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1",
+    "stats": "https://blocklottos.com/api/stats.php?chain=base",
+    "proof": "https://blocklottos.com/api/lottery/draw-proof?chain=base",
+    "polygon_latest": "https://blocklottos.com/api/lottery/draw-history?chain=polygon&limit=1",
+    "polygon_stats": "https://blocklottos.com/api/stats.php?chain=polygon",
+    "polygon_proof": "https://blocklottos.com/api/lottery/draw-proof?chain=polygon"
+  },
+  "contact": {
+    "email": "support@blocklottos.com",
+    "url": "https://blocklottos.com/contact"
+  },
+  "polygon_game": {
+    "name": "Polygon Fortune Ledger",
+    "chain_id": 137,
+    "ticket_price": "10 POL",
+    "ticket_currency": "POL",
+    "minimum_winner_payout": "100 POL",
+    "higher_live_jackpot_applies": true,
+    "contract": "0x07F62Ff6697eD9b475FEed9dc90a5A157936839c",
+    "draw_time": "Saturday 15:00 UTC"
+  },
+  "winner_payout_policy": {
+    "base_minimum": "100 USDC",
+    "polygon_minimum": "100 POL",
+    "higher_live_jackpot_applies": true,
+    "outcome_note": "Minimums apply only to a verified winning ticket; they do not guarantee that any ticket will win."
+  }
+}

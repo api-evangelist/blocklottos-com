@@ -1,0 +1,57 @@
+generated: '2026-09-19'
+method: searched
+source: https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md (HTTP 200, 2026-09-19) - a PROVIDER-PUBLISHED
+  Agent Skill, saved verbatim; the same file ships in the Git repository under skills/block-lottos-probability-challenge/SKILL.md.
+  The two REST-grounded skills are pipeline-GENERATED companions.
+skills:
+- file: blocklottos-com-block-lottos-probability-challenge.md
+  name: Block Lottos Probability Challenge
+  method: searched
+  source: https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md
+  license: MIT
+  version: 1.0.0
+  author: Block Lottos
+  api: mcp/blocklottos-com-mcp.yml
+  operations:
+  - get_capabilities
+  - get_jackpot
+  - get_stats
+  - get_draw_history
+  - get_draw_proof
+  - get_wallet_tickets
+  - check_wallet_prizes
+  - get_or_create_referral
+  - prepare_ticket_purchase
+  - confirm_ticket_purchase
+  summary: Provider-authored SKILL.md (open Agent Skills format; the provider names Hermes, OpenClaw, Claude Code,
+    Codex, Cursor). Eligibility gate, canonical facts, the ten MCP tools, four "honest number-selection modes",
+    a 11-step safe workflow, referral disclosure and failure rules. Grounded in MCP tool names, not REST operationIds
+    - see mcp/blocklottos-com-tool-crosswalk.yml for the binding.
+- file: blocklottos-com-base-ticket-purchase-rest.md
+  name: Buy one Base ticket through the REST API
+  method: generated
+  api: openapi/blocklottos-com-openapi.yml
+  operations:
+  - getBaseAgentCapabilities
+  - getOrCreateUnifiedAffiliateProfile
+  - prepareBaseAgentPurchase
+  - confirmBaseTicketPurchase
+  - getLotteryTickets
+  - getLotteryDrawHistory
+  - checkLotteryPrizes
+  summary: 'REST twin of the provider skill: same 6-step non-custodial flow expressed as operationIds, with the
+    idempotency, expiry, 202/409 and no-reversal rules.'
+- file: blocklottos-com-advertising-placement.md
+  name: Place a banner ad via the Advertising API
+  method: generated
+  api: openapi/blocklottos-com-openapi.yml
+  operations:
+  - getAdSizes
+  - submitAd
+  - confirmAdSubmitPayment
+  - getAdStatus
+  - getAdsByWallet
+  - requestAdActivationQuote
+  - confirmAdActivationPayment
+  summary: Quote-first submit -> pay -> review -> activate -> pay flow with live prices, 1-hour quote expiry, 402/409
+    semantics and the non-refundable rule.

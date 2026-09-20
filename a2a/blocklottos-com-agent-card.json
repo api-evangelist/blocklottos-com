@@ -1,0 +1,235 @@
+{
+  "schema_version": "v1",
+  "name": "Block Lottos",
+  "slug": "block-lottos",
+  "version": "2026.09.09",
+  "description": "Block Lottos is a transparent weekly probability challenge within a lottery. Agents can use an installable skill and MCP to read live data, choose six numbers without claiming predictive certainty, see the 100 POL and 100 USDC minimum winner payouts, prepare a bounded 1 USDC Base ticket, verify the purchase, and monitor results. The random draw is not a solvable equation.",
+  "url": "https://blocklottos.com",
+  "homepage_url": "https://blocklottos.com",
+  "defaultInputModes": [
+    "text"
+  ],
+  "defaultOutputModes": [
+    "text"
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "skills": [
+    {
+      "id": "block-lottos-probability-challenge",
+      "name": "Block Lottos Probability Challenge",
+      "description": "Use an installable Agent Skill and MCP to select six numbers for a random weekly lottery draw using an auditable method. The draw is not a solvable equation and no method guarantees a win.",
+      "tags": [
+        "probability",
+        "agent-skill",
+        "mcp",
+        "base",
+        "usdc"
+      ],
+      "skill_url": "https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md",
+      "mcp_git": "https://blocklottos.com/git/blocklottos-agent-tools.git"
+    },
+    {
+      "id": "get-base-agent-capabilities",
+      "name": "Read live Base capabilities",
+      "description": "Read live price, jackpot, payment token, next draw, workflow and safety limits.",
+      "tags": [
+        "base",
+        "agent",
+        "lottery"
+      ]
+    },
+    {
+      "id": "get-or-create-base-referral",
+      "name": "Get or create a unified multi-chain referral",
+      "description": "Securely enroll or manage the shared human/agent affiliate profile. An EVM identity wallet signs a challenge; Solana and Cardano are supported as payout wallets. A one-time management token protects changes and private balances.",
+      "tags": [
+        "base",
+        "agent",
+        "lottery"
+      ]
+    },
+    {
+      "id": "prepare-base-ticket-purchase",
+      "name": "Prepare a Base ticket purchase",
+      "description": "Build exact unsigned transactions for one 1 USDC Base ticket.",
+      "tags": [
+        "base",
+        "agent",
+        "lottery"
+      ]
+    },
+    {
+      "id": "confirm-base-ticket-purchase",
+      "name": "Confirm a Base ticket purchase",
+      "description": "Verify transaction success and the TicketPurchased event.",
+      "tags": [
+        "base",
+        "agent",
+        "lottery"
+      ]
+    },
+    {
+      "id": "check-base-tickets-and-results",
+      "name": "Check Base tickets and results",
+      "description": "Read wallet tickets, latest result, proof and prize status.",
+      "tags": [
+        "base",
+        "agent",
+        "lottery"
+      ]
+    }
+  ],
+  "provider": {
+    "name": "Block Lottos",
+    "organization": "Block Lottos",
+    "url": "https://blocklottos.com"
+  },
+  "category": "web3-gaming",
+  "protocols": [
+    "openapi",
+    "llms.txt",
+    "agents.txt",
+    "agent-actions",
+    "affiliate-program",
+    "mcp",
+    "agent-skill"
+  ],
+  "trust": {
+    "public_docs": true,
+    "public_openapi": true,
+    "no_api_key_for_read_endpoints": true,
+    "requires_user_wallet_signature_for_transactions": true,
+    "private_admin_paths_blocked": true
+  },
+  "entrypoints": {
+    "website": "https://blocklottos.com",
+    "games": "https://blocklottos.com/games",
+    "affiliate": "https://blocklottos.com/affiliate",
+    "advertise": "https://blocklottos.com/advertise",
+    "api_docs": "https://blocklottos.com/api-docs",
+    "openapi": "https://blocklottos.com/openapi.json",
+    "llms_txt": "https://blocklottos.com/llms.txt",
+    "agents_txt": "https://blocklottos.com/agents.txt",
+    "agent_actions": "https://blocklottos.com/.well-known/agent-actions.json",
+    "affiliate_program": "https://blocklottos.com/.well-known/affiliate-program.json",
+    "ai_plugin": "https://blocklottos.com/.well-known/ai-plugin.json",
+    "agent_tools": "https://blocklottos.com/agent-tools/",
+    "agent_skill": "https://blocklottos.com/skills/block-lottos-probability-challenge/SKILL.md",
+    "mcp_git": "https://blocklottos.com/git/blocklottos-agent-tools.git",
+    "mcp_launch": "uvx --from git+https://blocklottos.com/git/blocklottos-agent-tools.git blocklottos-mcp",
+    "agent_capabilities": "https://blocklottos.com/api/lottery/agent-capabilities",
+    "agent_referral": "https://blocklottos.com/api/lottery/agent-referral",
+    "agent_purchase": "https://blocklottos.com/api/lottery/agent-purchase",
+    "confirm_purchase": "https://blocklottos.com/api/lottery/confirm-ticket-tx"
+  },
+  "api_capabilities": [
+    {
+      "name": "Read live Base agent capabilities",
+      "type": "read",
+      "endpoint": "GET https://blocklottos.com/api/lottery/agent-capabilities"
+    },
+    {
+      "name": "Get or create free Base referral",
+      "type": "write_no_funds",
+      "endpoint": "POST https://blocklottos.com/api/lottery/agent-referral"
+    },
+    {
+      "name": "Prepare one Base ticket",
+      "type": "write_requires_wallet_signature",
+      "endpoint": "POST https://blocklottos.com/api/lottery/agent-purchase"
+    },
+    {
+      "name": "Confirm Base ticket on chain",
+      "type": "read_verification",
+      "endpoint": "POST https://blocklottos.com/api/lottery/confirm-ticket-tx"
+    },
+    {
+      "name": "Check Base tickets",
+      "type": "read",
+      "endpoint": "GET https://blocklottos.com/api/lottery/tickets/{wallet}?chain=base"
+    },
+    {
+      "name": "Read latest Base result",
+      "type": "read",
+      "endpoint": "GET https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Base",
+      "chain_id": 8453,
+      "game": "Base Future Ledger",
+      "currency": "USDC",
+      "ticket_price": "1 USDC",
+      "payment_token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payment_token_decimals": 6,
+      "gas_currency": "ETH",
+      "gas_note": "ETH is required only for Base network gas, never as ticket currency.",
+      "contract": "0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a",
+      "page": "https://blocklottos.com/base-future-ledger",
+      "minimum_winner_payout": 100,
+      "minimum_winner_payout_currency": "USDC",
+      "higher_live_jackpot_applies": true
+    },
+    {
+      "name": "Polygon",
+      "chain_id": 137,
+      "game": "Polygon Fortune Ledger",
+      "currency": "POL",
+      "page": "https://blocklottos.com/polygon-future-ledger",
+      "contract": "0x07F62Ff6697eD9b475FEed9dc90a5A157936839c",
+      "ticket_price": "10 POL",
+      "minimum_winner_payout": 100,
+      "minimum_winner_payout_currency": "POL",
+      "higher_live_jackpot_applies": true,
+      "draw_time": "Saturday 15:00 UTC"
+    }
+  ],
+  "agent_instructions": [
+    "Only participate when the wallet owner meets the legal-age requirement and lottery participation is permitted in their jurisdiction.",
+    "Use Base Future Ledger for the recommended flow: one ticket costs 1 USDC using official Base USDC.",
+    "A verified winning Polygon ticket receives at least 100 POL; a verified winning Base ticket receives at least 100 USDC. If the current jackpot is higher, the higher amount applies.",
+    "Fetch /api/lottery/agent-capabilities before every purchase.",
+    "The server never receives private keys, signs, or broadcasts; the agent-controlled or user-approved wallet does that.",
+    "Use max_price_usdc, valid_until and a unique idempotency_key for each purchase; approve exactly one ticket, never unlimited USDC.",
+    "One API call prepares one ticket to prevent accidental batching, but agents may make multiple purchase calls for as many tickets as the wallet owner permits.",
+    "Confirm the receipt and TicketPurchased event before reporting success.",
+    "Do not claim that any ticket will win, chase losses, exceed owner limits, or promise referral income. Minimum payout policy applies only to a verified winning ticket."
+  ],
+  "contact": {
+    "email": "support@blocklottos.com",
+    "url": "https://blocklottos.com/contact"
+  },
+  "legal": {
+    "terms": "https://blocklottos.com/terms",
+    "privacy": "https://blocklottos.com/privacy"
+  },
+  "recommended_chain": "base",
+  "default_action_endpoint": "https://blocklottos.com/api/lottery/agent-capabilities",
+  "live_draw_data": {
+    "base_latest": "https://blocklottos.com/api/lottery/draw-history?chain=base&limit=1",
+    "base_stats": "https://blocklottos.com/api/stats.php?chain=base",
+    "base_proof": "https://blocklottos.com/api/lottery/draw-proof?chain=base",
+    "polygon_latest": "https://blocklottos.com/api/lottery/draw-history?chain=polygon&limit=1",
+    "polygon_stats": "https://blocklottos.com/api/stats.php?chain=polygon",
+    "polygon_proof": "https://blocklottos.com/api/lottery/draw-proof?chain=polygon"
+  },
+  "winner_payout_policy": {
+    "polygon": {
+      "minimum": 100,
+      "currency": "POL",
+      "higher_live_jackpot_applies": true
+    },
+    "base": {
+      "minimum": 100,
+      "currency": "USDC",
+      "higher_live_jackpot_applies": true
+    },
+    "outcome_note": "These minimums apply only after a ticket is verified as a winner. They do not mean any ticket is guaranteed to win.",
+    "future_games": "Each future game will publish its currency and minimum winner payout before launch."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Block Lottos",
+  "name_for_model": "block_lottos",
+  "description_for_human": "Public Block Lottos APIs for lottery data, advertising, affiliates, and Base agent ticket preparation. One Base Future Ledger ticket costs exactly 1 USDC; Base ETH is required only for network gas.",
+  "description_for_model": "Use the API to read Polygon and Base lottery data, advertising options, affiliate information, and Base-first non-custodial ticket preparation. One Base Future Ledger ticket costs exactly 1 USDC using official Base USDC. Base ETH is required only for network gas; ETH and SOL are not the Base ticket payment currency. A verified winning Polygon ticket receives at least 100 POL; a verified winning Base ticket receives at least 100 USDC. If the current jackpot is higher, the higher amount applies. Never claim any ticket is guaranteed to win.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://blocklottos.com/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://blocklottos.com/images/logo21.png",
+  "contact_email": "support@blocklottos.com",
+  "legal_info_url": "https://blocklottos.com/terms"
+}

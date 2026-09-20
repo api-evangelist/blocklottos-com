@@ -1,0 +1,178 @@
+generated: '2026-09-19'
+method: derived
+format: custom
+source: 'openapi/blocklottos-com-openapi.yml 4xx/5xx/202 responses (every operation); enriched from https://blocklottos.com/api-docs#ads-errors
+  and #lottery-build-tx validation errors; envelope shapes confirmed live 2026-09-19 (405 on GET /api/lottery/agent-purchase,
+  404 on /api/lottery/draw-proof).'
+envelope:
+  lottery_and_agent_endpoints:
+    shape: '{"status":"error","message":"<text>"}'
+    observed: HTTP 405 {"status":"error","message":"Method not allowed"}; HTTP 404 {"status":"not_found","chain":"base","message":"No
+      public draw proof is available for this draw yet.","public_draw_id":19}
+    note: status is a string discriminator (ok | error | not_found | pending); message is human text; no machine
+      error code field is documented except the confirm step's code (e.g. receipt_pending) on a pending response.
+  advertising_endpoints:
+    shape: '{"error":"<text>"}'
+    example: '{"error":"Payment verification failed: TX hash not found"}'
+    rate_limited: 429 adds retry_after (seconds) in the body and a Retry-After header
+  content_type: application/json
+  problem_json: false
+status_codes:
+- status: 202
+  meaning: Transaction still pending - poll confirm-ticket-tx again (confirmBaseTicketPurchase)
+  retry: true
+- status: 400
+  meaning: 'Bad request: missing or invalid parameters; "Invalid or unsafe request" on agent endpoints. Documented
+    validation messages for build-ticket-tx: "Must provide exactly 6 numbers", "Numbers must be between 1 and 49",
+    "Numbers must be unique", "Invalid wallet address"'
+  retry: false
+- status: 402
+  meaning: 'Payment required: the USDC payment for a quote was not verified on chain (confirmAdSubmitPayment, confirmAdActivationPayment)'
+  retry: retry the confirmation after more confirmations; never re-send the payment
+- status: 404
+  meaning: 'Not found: unknown submission_id (getAdStatus, activation) or no public draw proof yet (getLotteryDrawProof)'
+  retry: false
+- status: 405
+  meaning: 'Method not allowed: wrong HTTP method (e.g. GET on the POST-only agent endpoints; declared on the jackpot/stats
+    reads)'
+  retry: false
+- status: 409
+  meaning: 'Conflict: ad not in the right state for activation; price cap exceeded or intent expired (prepareBaseAgentPurchase);
+    failed or mismatched transaction (confirmBaseTicketPurchase)'
+  retry: only after re-reading live state; a 409 on purchase preparation is a stop signal
+- status: 429
+  meaning: Rate limited per IP; Retry-After header and retry_after body field give the wait in seconds
+  retry: after Retry-After
+- status: 500
+  meaning: Server error (documented on the Advertising API)
+  retry: with backoff
+- status: 503
+  meaning: 'Upstream unavailable: chain RPC (lottery reads, agent purchase/confirm) or the affiliate service (agent-referral)'
+  retry: with backoff; never re-broadcast a transaction because a confirm returned 503
+problems:
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getJackpot
+- status: 405
+  title: Method not allowed
+  source_operation: openapi/blocklottos-com-openapi.yml#getJackpot
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getStats
+- status: 405
+  title: Method not allowed
+  source_operation: openapi/blocklottos-com-openapi.yml#getStats
+- status: 429
+  title: Rate limit exceeded
+  source_operation: openapi/blocklottos-com-openapi.yml#getAdSizes
+- status: 400
+  title: Invalid input
+  source_operation: openapi/blocklottos-com-openapi.yml#submitAd
+- status: 429
+  title: Rate limit exceeded
+  source_operation: openapi/blocklottos-com-openapi.yml#submitAd
+- status: 400
+  title: Invalid quote_id or tx_hash
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdSubmitPayment
+- status: 402
+  title: Payment not verified on-chain
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdSubmitPayment
+- status: 404
+  title: Submission not found
+  source_operation: openapi/blocklottos-com-openapi.yml#getAdStatus
+- status: 400
+  title: Invalid wallet address
+  source_operation: openapi/blocklottos-com-openapi.yml#getAdsByWallet
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#buildLotteryTicketTx
+- status: 503
+  title: RPC unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#buildLotteryTicketTx
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryTickets
+- status: 503
+  title: RPC unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryTickets
+- status: 503
+  title: RPC unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryDrawHistory
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryDrawHistory
+- status: 404
+  title: No public proof is available yet
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryDrawProof
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryDrawProof
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#checkLotteryPrizes
+- status: 503
+  title: RPC unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#checkLotteryPrizes
+- status: 400
+  title: Invalid input
+  source_operation: openapi/blocklottos-com-openapi.yml#requestAdActivationQuote
+- status: 404
+  title: Submission not found
+  source_operation: openapi/blocklottos-com-openapi.yml#requestAdActivationQuote
+- status: 409
+  title: Ad is not approved
+  source_operation: openapi/blocklottos-com-openapi.yml#requestAdActivationQuote
+- status: 400
+  title: Invalid quote_id or tx_hash
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdActivationPayment
+- status: 402
+  title: Payment not verified on-chain
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdActivationPayment
+- status: 404
+  title: Quote or ad not found
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdActivationPayment
+- status: 409
+  title: Quote already used or ad state changed
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmAdActivationPayment
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryJackpotAlias
+- status: 405
+  title: Method not allowed
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryJackpotAlias
+- status: 400
+  title: Invalid input or unsupported chain. Use polygon or base.
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryStatsAlias
+- status: 405
+  title: Method not allowed
+  source_operation: openapi/blocklottos-com-openapi.yml#getLotteryStatsAlias
+- status: 429
+  title: Rate limit exceeded
+  source_operation: openapi/blocklottos-com-openapi.yml#getBaseAgentCapabilities
+- status: 400
+  title: Invalid or unsafe request
+  source_operation: openapi/blocklottos-com-openapi.yml#getOrCreateUnifiedAffiliateProfile
+- status: 503
+  title: Affiliate service unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#getOrCreateUnifiedAffiliateProfile
+- status: 400
+  title: Invalid or unsafe request
+  source_operation: openapi/blocklottos-com-openapi.yml#prepareBaseAgentPurchase
+- status: 409
+  title: Price cap exceeded or intent expired
+  source_operation: openapi/blocklottos-com-openapi.yml#prepareBaseAgentPurchase
+- status: 503
+  title: RPC unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#prepareBaseAgentPurchase
+- status: 202
+  title: Transaction still pending
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmBaseTicketPurchase
+- status: 400
+  title: Invalid or unsafe request
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmBaseTicketPurchase
+- status: 409
+  title: Failed or mismatched transaction
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmBaseTicketPurchase
+- status: 503
+  title: RPC or private attribution log unavailable
+  source_operation: openapi/blocklottos-com-openapi.yml#confirmBaseTicketPurchase

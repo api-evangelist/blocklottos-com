@@ -1,0 +1,208 @@
+generated: '2026-09-19'
+method: derived
+source: openapi/blocklottos-com-openapi.yml - the document has NO components.schemas (every schema is inline), so
+  entities are derived from inline response/request shapes and the id-reference fields that link them (wallet, draw_id,
+  submission_id, quote_id, referral_id, execution_id, tx_hash); id prefixes from api-docs examples; live responses
+  2026-09-19 confirmed field names.
+render: null
+entities:
+- name: LotteryGame
+  key: chain
+  values:
+  - polygon
+  - base
+  fields:
+  - chain
+  - network
+  - chain_id
+  - contract
+  - ticket_currency
+  - ticket_price
+  - payment_token
+  - draw_time_utc
+  source: x-blocklottos-active-contracts, getBaseAgentCapabilities.game
+- name: JackpotSnapshot
+  fields:
+  - jackpot
+  - onchain_jackpot
+  - minimum_winner_payout
+  - winner_payout
+  - jackpot_units
+  - currency
+  - timestamp
+  source: getLotteryJackpotAlias, getLotteryStatsAlias (+draw_number, rollover_count, next_draw_timestamp)
+- name: Draw
+  key: draw_id (also public_draw_id / contract_draw_id)
+  fields:
+  - draw_id
+  - winning_numbers[6]
+  - draw_date
+  - status
+  - jackpot
+  - currency
+  - jackpot_won
+  - rolled_over
+  - winners[]
+  - winner_count
+  - draw_timestamp
+  source: getLotteryDrawHistory.draws[]
+- name: DrawProof
+  key: draw_id
+  fields:
+  - algorithm (BlockLottosCommitRevealV1)
+  - ticket_root
+  - seed_commitment
+  - anchor_block
+  - revealed_seed
+  - final_seed
+  source: getLotteryDrawProof; /draw-proof page
+- name: Ticket
+  fields:
+  - numbers[6]
+  source: getLotteryTickets.tickets[] (per wallet, per active draw)
+- name: PrizeStatus
+  fields:
+  - has_prize
+  - outstanding_prize
+  - outstanding_prize_units
+  - currency
+  - payout_model
+  - expires_timestamp
+  source: checkLotteryPrizes
+- name: Wallet
+  key: wallet_address (0x + 40 hex)
+  note: External identity; the API stores no account object - a wallet IS the account for tickets, ads and affiliate
+    profiles
+- name: PurchasePreparation
+  key: execution_id (bl_...)
+  fields:
+  - idempotency_key
+  - valid_until
+  - chain
+  - chain_id
+  - currency
+  - ticket_price
+  - ticket_price_units
+  - contract
+  - payment_token
+  - referral_id
+  - referral_code
+  - approval_required
+  - approval_transaction{to,data,value,chainId,approval_scope}
+  - transaction{to,data,value,chainId}
+  - non_custodial
+  - server_signs_or_broadcasts
+  source: prepareBaseAgentPurchase
+- name: PurchaseConfirmation
+  key: tx_hash
+  fields:
+  - confirmed
+  - numbers[6]
+  - contract_draw_id
+  - public_draw_id
+  - referral_bytes32
+  - explorer_url
+  - attribution_recorded
+  - status (ok|pending)
+  - code
+  source: confirmBaseTicketPurchase
+- name: AffiliateProfile
+  key: referral_id / referral_code (also referral_bytes32)
+  fields:
+  - payout_wallet
+  - evm_wallet
+  - solana_wallet
+  - cardano_wallet
+  - referral_link
+  - management_token (one-time)
+  - pending/paid balances
+  - payout history
+  source: getOrCreateUnifiedAffiliateProfile; affiliate-program.json
+- name: AdSize
+  key: id (728x90 | 300x250 | 320x50 | 160x600)
+  fields:
+  - width
+  - height
+  - label
+  - price_7d
+  - price_14d
+  - price_30d
+  - discount_pct
+  - discount_expires
+  - discounted_price_*
+  source: getAdSizes
+- name: AdQuote
+  key: quote_id (sq_ submit | aq_ activation)
+  fields:
+  - status (awaiting_payment)
+  - expires_at (1 hour)
+  - payment{network,chain_id,usdc_contract,to,amount_usdc,tx}
+  - next_step
+  source: submitAd, requestAdActivationQuote
+- name: AdSubmission
+  key: submission_id (ad_N)
+  fields:
+  - status (pending_review|approved|rejected|active|expired)
+  - banner_size
+  - target_url
+  - submitted_at
+  - reviewed_at
+  - activated_at
+  - expires_at
+  - stats.clicks
+  source: getAdStatus, getAdsByWallet
+relationships:
+- from: Wallet
+  to: Ticket
+  type: has_many
+  via: path {wallet} on getLotteryTickets, scoped by ?chain and the active draw
+- from: Wallet
+  to: PrizeStatus
+  type: has_one
+  via: path {wallet} on checkLotteryPrizes
+- from: Wallet
+  to: AdSubmission
+  type: has_many
+  via: path {wallet_address} on getAdsByWallet; wallet_address on submitAd
+- from: Wallet
+  to: AffiliateProfile
+  type: has_one
+  via: wallet_address / connected_wallet (EVM identity) on getOrCreateUnifiedAffiliateProfile
+- from: LotteryGame
+  to: Draw
+  type: has_many
+  via: chain query param; draw_id
+- from: Draw
+  to: DrawProof
+  type: has_one
+  via: draw_id
+- from: Draw
+  to: JackpotSnapshot
+  type: has_one
+  via: draw_number / rolled_over
+- from: PurchasePreparation
+  to: PurchaseConfirmation
+  type: has_one
+  via: execution_id echoed into confirmBaseTicketPurchase; tx_hash
+- from: PurchaseConfirmation
+  to: Draw
+  type: belongs_to
+  via: contract_draw_id / public_draw_id
+- from: AffiliateProfile
+  to: PurchasePreparation
+  type: has_many
+  via: referral_id (code or bytes32) on prepareBaseAgentPurchase; referral_bytes32 on confirmation
+- from: AdSize
+  to: AdSubmission
+  type: has_many
+  via: size_id on submitAd; banner_size on status
+- from: AdQuote
+  to: AdSubmission
+  type: belongs_to
+  via: submission_id on requestAdActivationQuote; quote_id + tx_hash on the pay steps
+id_prefixes:
+  bl_: execution_id
+  sq_: submit quote
+  aq_: activation quote
+  ad_: submission_id
+  blm_: affiliate management token

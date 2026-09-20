@@ -1,23 +1,159 @@
 aid: blocklottos-com
 name: Block Lottos
-description: 'Block Lottos is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: Block Lottos is a blockchain lottery platform (Polygon Fortune Ledger, paid in POL, and Base Future
+  Ledger, paid in USDC on Base) that publishes a public, key-free REST API for live jackpots, draw history, wallet
+  tickets, prize status and commit-reveal draw proofs, an unsigned-transaction builder for tickets and banner-ad
+  placements, and a Base-first agent purchase flow (capabilities, free referral enrollment, one-ticket preparation
+  with a price cap and idempotency key, on-chain confirmation). It ships an OpenAPI 3.1 document, llms.txt and agents.txt,
+  an ai-plugin manifest, an agent card at /.well-known/agent.json, a provider-authored SKILL.md and an open-source
+  stdio MCP server on PyPI (blocklottos-mcp). The server never holds keys, signs or broadcasts; every purchase is
+  non-custodial.
 url: https://raw.githubusercontent.com/api-evangelist/blocklottos-com/refs/heads/main/apis.yml
+image: https://blocklottos.com/images/logo21.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
+x-tier: profiled
 x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- Lottery
+- Blockchain
+- Web3
+- Gaming
+- Cryptocurrency
+- Advertising
+- Affiliate Marketing
+- AI Agents
+- Base
+- Polygon
+- USDC
+- Smart Contracts
+apis:
+- aid: blocklottos-com:block-lottos-api
+  name: Block Lottos API
+  description: Public Block Lottos API (OpenAPI 3.1.0, v1.2.0, 20 operations, no API key) covering lottery reads
+    for Polygon Fortune Ledger and Base Future Ledger (jackpot, stats, draw history, draw proof, wallet tickets,
+    prize checks), unsigned ticket-transaction building, the Base-first agent flow (agent-capabilities, agent-referral,
+    agent-purchase, confirm-ticket-tx) and a quote-first USDC banner advertising API (sizes, submit, submit/pay,
+    status, wallet lookup, activate, activate/pay). All responses are JSON; rate limits are per IP with a Retry-After
+    header on 429.
+  image: https://blocklottos.com/images/logo21.png
+  humanURL: https://blocklottos.com/api-docs
+  baseURL: https://blocklottos.com
+  tags:
+  - Lottery
+  - Advertising
+  - AI Agents
+  - Affiliate Marketing
+  - Blockchain
+  - Base
+  - Polygon
+  properties:
+  - type: OpenAPI
+    url: openapi/blocklottos-com-openapi.yml
+  - type: OpenAPI
+    name: Provider-hosted OpenAPI (verbatim source, mirrored at openapi/_original/)
+    url: https://blocklottos.com/openapi.json
+  - type: Documentation
+    url: https://blocklottos.com/api-docs
+  - type: APIReference
+    url: https://blocklottos.com/api-docs
+  - type: GettingStarted
+    url: https://blocklottos.com/api-docs#ads-quickstart
+  - type: RateLimits
+    url: rate-limits/blocklottos-com-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/blocklottos-com-problem-types.yml
+  - type: Overlay
+    url: overlays/blocklottos-com-openapi-overlay.yaml
+  - type: DataModel
+    url: data-model/blocklottos-com-data-model.yml
+  - type: Examples
+    url: examples/blocklottos-com-examples.yml
+  - type: ToolCrosswalk
+    url: mcp/blocklottos-com-tool-crosswalk.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/blocklottos-com-agentic-access.yml
 - type: Website
   url: https://blocklottos.com/
+- type: Documentation
+  url: https://blocklottos.com/api-docs
+- type: APIReference
+  url: https://blocklottos.com/api-docs
+- type: GettingStarted
+  url: https://blocklottos.com/api-docs#ads-quickstart
+- type: Support
+  url: https://blocklottos.com/contact
+- type: FAQ
+  url: https://blocklottos.com/faq
+- type: Pricing
+  name: Advertising placement pricing (USDC) — the API itself is free and key-less
+  url: https://blocklottos.com/advertise
+- type: TermsOfService
+  url: https://blocklottos.com/terms
+- type: PrivacyPolicy
+  url: https://blocklottos.com/privacy
+- type: SourceCode
+  name: blocklottos-agent-tools (MCP server + SKILL.md), self-hosted public Git
+  url: https://blocklottos.com/git/blocklottos-agent-tools.git
+- type: DomainSecurity
+  url: security/blocklottos-com-domain-security.yml
+- type: LLMsTxt
+  name: llms.txt (verbatim from https://blocklottos.com/llms.txt)
+  url: llms/blocklottos-com-llms.txt
+- type: AgentCard
+  name: A2A agent card at legacy /.well-known/agent.json - graded flavored (no protocolVersion)
+  url: a2a/blocklottos-com-a2a.yml
+- type: WellKnown
+  url: well-known/blocklottos-com-well-known.yml
+- type: MCPServer
+  name: blocklottos-mcp - local stdio only (PyPI + self-hosted Git), no remote endpoint
+  url: mcp/blocklottos-com-mcp.yml
+- type: Packages
+  url: packages/blocklottos-com-packages.yml
+- type: AgentSkill
+  name: provider-published SKILL.md + two generated REST-grounded skills
+  url: skills/_index.yml
+- type: Authentication
+  url: authentication/blocklottos-com-authentication.yml
+- type: Conformance
+  url: conformance/blocklottos-com-conformance.yml
+- type: Lifecycle
+  url: lifecycle/blocklottos-com-lifecycle.yml
+- type: Conventions
+  url: conventions/blocklottos-com-conventions.yml
+- type: Idempotency
+  name: 'idempotency_key on agent-purchase - coverage: partial (correlation-only, 2 of 8 writes)'
+  url: conventions/blocklottos-com-conventions.yml
+- type: Plans
+  url: plans/blocklottos-com-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/blocklottos-com-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/blocklottos-com-problem-types.yml
+- type: DataModel
+  url: data-model/blocklottos-com-data-model.yml
+- type: Examples
+  url: examples/blocklottos-com-examples.yml
+- type: VulnerabilityDisclosure
+  url: security/blocklottos-com-vulnerability-disclosure.yml
+- type: Security
+  name: SECURITY.md disclosure channel (support@blocklottos.com), scoped to the agent-tools repository; no security.txt
+  url: security/blocklottos-com-vulnerability-disclosure.yml
+- type: DataSubjectRequest
+  name: Privacy Policy section 6 - deletion right via the contact page (thin; see regulatory/)
+  url: https://blocklottos.com/privacy
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 33
+  pass: local-v3

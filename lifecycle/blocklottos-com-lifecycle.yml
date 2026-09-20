@@ -1,0 +1,54 @@
+generated: '2026-09-19'
+method: searched
+source: https://blocklottos.com/api-docs, https://blocklottos.com/terms (sections 7 and 9), https://blocklottos.com/openapi.json
+  info.version, /.well-known/agent.json version, probes of /status, /changelog, /blog (all 404) on 2026-09-19; deprecated
+  flags derived from the OpenAPI (none).
+versioning:
+  scheme: none
+  current: OpenAPI info.version 1.2.0; agent manifest version 2026.09.09; agent-actions schema_version 2026-09-08;
+    affiliate manifest schema_version 2026-09-10
+  mechanism: No version in the URL path, no version header, no date pinning. Paths are unversioned (/api/lottery/...,
+    /api/ads/...).
+  docs: https://blocklottos.com/api-docs
+  notes: The spec Last-Modified header (2026-09-10) and the PyPI release burst the same day suggest the contract
+    moves without a versioning ceremony.
+compatibility:
+  legacy_aliases:
+  - legacy: /api/jackpot.php
+    preferred: /api/jackpot
+    operationIds:
+    - getJackpot
+    - getLotteryJackpotAlias
+  - legacy: /api/stats.php
+    preferred: /api/stats
+    operationIds:
+    - getStats
+    - getLotteryStatsAlias
+  statement: '"All endpoints use clean URLs, no .php extension required ... Both forms work, but the clean URL is
+    preferred and what bots and agents should use." (api-docs #lottery-overview)'
+  backwards_compatible_builder: POST /api/lottery/build-ticket-tx (buildLotteryTicketTx) is documented as the "Backwards-compatible
+    general builder"; the Base-first agent-purchase endpoint is the recommended path for agents. Neither is marked
+    deprecated.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  notes: 'No deprecation policy, sunset schedule or RFC 8594 headers are published. Terms section 9: "We reserve
+    the right to modify these Terms at any time. Changes take effect immediately upon posting."'
+sla:
+  url: https://blocklottos.com/terms
+  uptime_target: null
+  notes: 'Terms section 7 explicitly disclaims availability: "We do not guarantee the availability, uptime, or performance
+    of the website or smart contracts." Read endpoints are cached 60 seconds and depend on public chain RPCs (polygon-bor-rpc.publicnode.com
+    / 1rpc.io, base-rpc.publicnode.com / mainnet.base.org) with 503 on RPC failure.'
+status_page: null
+changelog: null
+schedule:
+  draws:
+  - game: Polygon Fortune Ledger
+    when: Saturday 15:00 UTC
+  - game: Base Future Ledger
+    when: Saturday 16:00 UTC
+  note: The weekly draw is the only published cadence; it is a product schedule, not an API lifecycle event.
+deprecated_operations: []
+pointer_note: 'No StatusPage or Deprecation pointer is emitted: neither surface exists.'

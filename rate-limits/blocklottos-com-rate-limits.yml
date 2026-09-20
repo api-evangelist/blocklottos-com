@@ -1,0 +1,169 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Block Lottos
+providerId: blocklottos-com
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: searched
+source: 'https://blocklottos.com/api-docs#lottery-rate-limits and #ads-rate-limits (per-endpoint tables, 2026-09-19);
+  response-header behaviour from the same page ("When rate limited, the response includes a retry_after field (in
+  seconds) and an HTTP Retry-After header"); live 200 responses probed 2026-09-19 carried no quota headers.'
+sources:
+- https://blocklottos.com/api-docs#lottery-rate-limits
+- https://blocklottos.com/api-docs#ads-rate-limits
+tags:
+- Rate Limiting
+- Lottery
+- Advertising
+description: 'Every endpoint is rate limited per client IP on a one-minute window: 2/min on cached read endpoints,
+  5/min on affiliate enrollment, 10/min on transaction builders, quote and confirm endpoints. Exhaustion returns
+  HTTP 429 with a Retry-After header and a retry_after body field. No quota-remaining headers are emitted on successful
+  responses; read endpoints are served from a 60-second cache, so polling faster than once a minute is pointless
+  as well as throttled.'
+limit_count: 17
+headers:
+  retryAfter: Retry-After
+  limit: null
+  remaining: null
+  reset: null
+  requestId: null
+  observed: 200 responses on 2026-09-19 carried Cache-Control (public, max-age=60 on reads; no-cache on wallet reads;
+    no-store on writes) and CORS headers only - no X-RateLimit-*/RateLimit-* headers.
+responseCodes:
+  throttled: 429
+bodyFields:
+  retry_after: seconds until the window resets (429 body)
+limits:
+- name: /api/jackpot (and .php)
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getJackpot
+  - getLotteryJackpotAlias
+- name: /api/stats (and .php)
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getStats
+  - getLotteryStatsAlias
+- name: /api/lottery/draw-history
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getLotteryDrawHistory
+- name: /api/lottery/tickets/{wallet}
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getLotteryTickets
+- name: /api/lottery/check-prizes/{wallet}
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - checkLotteryPrizes
+- name: /api/lottery/build-ticket-tx
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - buildLotteryTicketTx
+- name: /api/lottery/agent-capabilities
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - getBaseAgentCapabilities
+- name: /api/lottery/agent-referral
+  scope: ip
+  metric: requests_per_minute
+  limit: 5
+  timeFrame: minute
+  operationIds:
+  - getOrCreateUnifiedAffiliateProfile
+- name: /api/lottery/agent-purchase
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - prepareBaseAgentPurchase
+- name: /api/lottery/confirm-ticket-tx
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - confirmBaseTicketPurchase
+- name: /api/ads/sizes
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getAdSizes
+- name: /api/ads/submit
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - submitAd
+- name: /api/ads/submit/pay
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - confirmAdSubmitPayment
+- name: /api/ads/wallet/*
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getAdsByWallet
+- name: /api/ads/status/*
+  scope: ip
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: minute
+  operationIds:
+  - getAdStatus
+- name: /api/ads/activate
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - requestAdActivationQuote
+- name: /api/ads/activate/pay
+  scope: ip
+  metric: requests_per_minute
+  limit: 10
+  timeFrame: minute
+  operationIds:
+  - confirmAdActivationPayment
+policies:
+- name: Per-IP scope
+  description: All limits are keyed on the client IP; there are no per-key or per-account tiers because there are
+    no keys or accounts.
+- name: 60-second read cache
+  description: 'Jackpot, stats and draw-history responses are cached 60 seconds server-side (Cache-Control: public,
+    max-age=60).'
+- name: Back-off
+  description: On 429 wait for Retry-After seconds. Never re-broadcast a wallet transaction because a confirm/pay
+    call was throttled - retry the confirmation instead.

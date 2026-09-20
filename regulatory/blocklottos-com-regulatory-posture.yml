@@ -1,0 +1,66 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://blocklottos.com/privacy (Last updated May 2026), https://blocklottos.com/terms (Last updated September
+  2026), well-known/ (no security.txt), security/ (no trust center), lifecycle/ (no support period), plus live probes
+  2026-09-19 of /accessibility, /legal/subprocessors, /legal/dpa, /privacy/requests, /transparency, /security/sbom,
+  /docs/data-residency, /ai/transparency, /legal/report-content - all real 404s.
+signals:
+  data_subject_request:
+    url: https://blocklottos.com/privacy
+    section: 6. Your Rights
+    channel: contact form at https://blocklottos.com/contact (no email is published on the privacy page; support@blocklottos.com
+      appears in the OpenAPI/agent card)
+    rights_named:
+    - deletion
+    stated_sla: null
+    exclusion: immutable blockchain records
+    retention_stated: '"Contact form submissions are retained for up to 12 months and then deleted."'
+    evidence:
+    - source: https://blocklottos.com/privacy
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '"You have the right to request deletion of any personal data we hold (excluding immutable blockchain
+        records). Contact us at the address on our Contact page."'
+    note: 'A published right with a channel, but the thinnest form of the signal: one right (deletion), no access/correction/portability,
+      no response period, no dedicated intake page (/privacy/requests 404) and no API. Recorded because the statement
+      is real; graded thin.'
+near_misses:
+- signal: age_assurance
+  why_not_recorded: Terms section 2 requires users to be 18+ (or the local gambling age) and the agent card/agents.txt
+    instruct agents to "only participate when the wallet owner meets the legal-age requirement"; this is an eligibility
+    RULE pushed to the caller, not an age-assurance mechanism or documented age signal. Wallet-only access means
+    no age check is performed by the provider.
+  url: https://blocklottos.com/terms
+- signal: subprocessors
+  why_not_recorded: The privacy policy names Google Analytics (gtag.js) and Google reCAPTCHA Enterprise as third
+    parties, and the api-docs name public RPC providers (publicnode.com, 1rpc.io, mainnet.base.org); there is no
+    dated subprocessor table or DPA.
+  url: https://blocklottos.com/privacy
+- signal: notice_and_action
+  why_not_recorded: Terms section 10 gives Block Lottos the right to reject/remove advertisements and describes
+    prohibited ad content, but publishes no reporting channel for third parties (/legal/report-content 404).
+  url: https://blocklottos.com/terms
+- signal: incident_notification
+  why_not_recorded: Terms section 6 is a smart-contract risk disclaimer; no breach-notification commitment or SLA
+    is stated.
+  url: https://blocklottos.com/terms
+probes:
+- url: https://blocklottos.com/accessibility
+  status: 404
+- url: https://blocklottos.com/legal/subprocessors
+  status: 404
+- url: https://blocklottos.com/legal/dpa
+  status: 404
+- url: https://blocklottos.com/privacy/requests
+  status: 404
+- url: https://blocklottos.com/transparency
+  status: 404
+- url: https://blocklottos.com/security/sbom
+  status: 404
+- url: https://blocklottos.com/docs/data-residency
+  status: 404
+- url: https://blocklottos.com/ai/transparency
+  status: 404
+- url: https://blocklottos.com/legal/report-content
+  status: 404

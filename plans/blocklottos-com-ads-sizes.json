@@ -1,0 +1,62 @@
+{
+    "sizes": [
+        {
+            "id": "728x90",
+            "width": 728,
+            "height": 90,
+            "label": "Leaderboard (728\u00d790) \u2014 Desktop top\/bottom",
+            "price_7d": 85,
+            "price_14d": 140,
+            "price_30d": 250,
+            "discount_pct": 0,
+            "discount_expires": "2026-07-24T20:00:00+00:00",
+            "discounted_price_7d": 85,
+            "discounted_price_14d": 140,
+            "discounted_price_30d": 250
+        },
+        {
+            "id": "300x250",
+            "width": 300,
+            "height": 250,
+            "label": "Medium Rectangle (300\u00d7250) \u2014 Most popular",
+            "price_7d": 85,
+            "price_14d": 140,
+            "price_30d": 250,
+            "discount_pct": 0,
+            "discount_expires": "2026-07-24T20:00:00+00:00",
+            "discounted_price_7d": 85,
+            "discounted_price_14d": 140,
+            "discounted_price_30d": 250
+        },
+        {
+            "id": "320x50",
+            "width": 320,
+            "height": 50,
+            "label": "Mobile Banner (320\u00d750) \u2014 Mobile",
+            "price_7d": 85,
+            "price_14d": 140,
+            "price_30d": 250,
+            "discount_pct": 0,
+            "discount_expires": "2026-07-24T20:00:00+00:00",
+            "discounted_price_7d": 85,
+            "discounted_price_14d": 140,
+            "discounted_price_30d": 250
+        },
+        {
+            "id": "160x600",
+            "width": 160,
+            "height": 600,
+            "label": "Wide Skyscraper (160\u00d7600) \u2014 Sidebar",
+            "price_7d": 85,
+            "price_14d": 140,
+            "price_30d": 250,
+            "discount_pct": 0,
+            "discount_expires": "2026-07-24T20:00:00+00:00",
+            "discounted_price_7d": 85,
+            "discounted_price_14d": 140,
+            "discounted_price_30d": 250
+        }
+    ],
+    "submit_fee": 1,
+    "currency": "USDC"
+}

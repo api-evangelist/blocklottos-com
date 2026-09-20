@@ -1,0 +1,119 @@
+generated: '2026-09-19'
+method: derived
+source: Derived by binding each tool in src/blocklottos_mcp/server.py + client.py (cloned 2026-09-19) to the operationId
+  in openapi/blocklottos-com-openapi.yml whose path the client actually calls. Confidence is high wherever client.py
+  names the path verbatim.
+purpose: 'Make the MCP tool the discovery unit and bind it to its REST operation so the tool inherits the real parameters/requestBody.
+  Block Lottos MCP is a strict Base-only SUBSET of the REST surface: 10 of 20 operations are reachable through it,
+  none of the Advertising API is, and the referral tool sends only the legacy single-field body.'
+surfaces:
+  rest_openapi: openapi/blocklottos-com-openapi.yml (20 operations, 0 components.schemas; source openapi/_original/)
+  graphql: null
+  mcp: local stdio only - no remote endpoint; tool list read from source (see mcp/blocklottos-com-mcp.yml deployment.verified)
+crosswalk:
+- tool: get_capabilities
+  category: read
+  rest:
+  - getBaseAgentCapabilities
+  binding: rest
+  confidence: high
+  note: GET /api/lottery/agent-capabilities
+- tool: get_jackpot
+  category: read
+  rest:
+  - getLotteryJackpotAlias
+  binding: rest
+  confidence: high
+  note: client.py calls GET /api/lottery/jackpot?chain=; getJackpot (/api/jackpot.php) is the same resource under
+    the legacy .php alias. The tool post-processes the response to enforce the 100 USDC / 100 POL minimum-payout
+    floor locally.
+- tool: get_stats
+  category: read
+  rest:
+  - getLotteryStatsAlias
+  binding: rest
+  confidence: high
+  note: GET /api/lottery/stats?chain=base (Base pinned; getStats is the .php alias).
+- tool: get_draw_history
+  category: read
+  rest:
+  - getLotteryDrawHistory
+  binding: rest
+  confidence: high
+  note: chain pinned to base; limit 1-10, optional draw_id.
+- tool: get_draw_proof
+  category: read
+  rest:
+  - getLotteryDrawProof
+  binding: rest
+  confidence: high
+  note: chain pinned to base.
+- tool: get_wallet_tickets
+  category: read
+  rest:
+  - getLotteryTickets
+  binding: rest
+  confidence: high
+- tool: check_wallet_prizes
+  category: read
+  rest:
+  - checkLotteryPrizes
+  binding: rest
+  confidence: high
+- tool: get_or_create_referral
+  category: write_no_funds
+  rest:
+  - getOrCreateUnifiedAffiliateProfile
+  binding: rest
+  confidence: high
+  note: Sends only {wallet_address, agent_id?} - the backward-compatible EVM identity shape. The REST operation
+    also supports action=challenge/manage with challenge_id+signature, Solana/Cardano payout wallets and a Bearer
+    blm_ management token; none of that is reachable through the tool.
+- tool: prepare_ticket_purchase
+  category: financial_preparation
+  rest:
+  - prepareBaseAgentPurchase
+  binding: rest
+  confidence: high
+  note: Same body as the REST operation; the tool additionally pins max_price_usdc to exactly 1 USDC and re-validates
+    the returned calldata.
+- tool: confirm_ticket_purchase
+  category: write_no_funds
+  rest:
+  - confirmBaseTicketPurchase
+  binding: rest
+  confidence: high
+mcp_only: []
+resources_only:
+- resource: blocklottos://agent-guide
+  backing: GET /agents.txt - not an OpenAPI operation
+- resource: blocklottos://openapi
+  backing: GET /openapi.json - not an OpenAPI operation
+rest_only:
+- operationId: getJackpot
+  reason: legacy .php alias of getLotteryJackpotAlias
+- operationId: getStats
+  reason: legacy .php alias of getLotteryStatsAlias
+- operationId: buildLotteryTicketTx
+  reason: general (Polygon or Base) ticket builder; the MCP uses the Base-only agent-purchase endpoint instead
+- operationId: getAdSizes
+  reason: Advertising API not exposed via MCP
+- operationId: submitAd
+  reason: Advertising API not exposed via MCP
+- operationId: confirmAdSubmitPayment
+  reason: Advertising API not exposed via MCP
+- operationId: getAdStatus
+  reason: Advertising API not exposed via MCP
+- operationId: getAdsByWallet
+  reason: Advertising API not exposed via MCP
+- operationId: requestAdActivationQuote
+  reason: Advertising API not exposed via MCP
+- operationId: confirmAdActivationPayment
+  reason: Advertising API not exposed via MCP
+coverage:
+  mcp_tools: 10
+  tools_bound_to_rest: 10
+  tools_mcp_only: 0
+  rest_operations: 20
+  rest_operations_reachable_via_mcp: 10
+  rest_only: 10

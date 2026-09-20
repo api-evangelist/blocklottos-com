@@ -1,0 +1,148 @@
+generated: '2026-09-19'
+method: searched
+source: https://blocklottos.com/api-docs (all sections), https://blocklottos.com/llms.txt, https://blocklottos.com/agents.txt,
+  /.well-known/agent-actions.json, https://blocklottos.com/terms, openapi/blocklottos-com-openapi.yml; live response
+  headers observed 2026-09-19.
+description: 'Cross-cutting runtime semantics of the Block Lottos REST API: key-less access, per-IP rate limits
+  with Retry-After, 60-second read caching, a status/message error envelope, a required but correlation-only idempotency
+  key on the one money-adjacent operation, quote-first unsigned-transaction previews in place of a dry-run flag,
+  and no reversibility once a transaction is on chain.'
+base_url: https://blocklottos.com
+base_url_evidence: 'api-docs #lottery-overview "Base URL: https://blocklottos.com"; #ads-overview "Base URL: https://blocklottos.com/api/ads/";
+  OpenAPI servers[0].url https://blocklottos.com. repair-api-bases.py flags this as marketing-base because it equals
+  the website root; the docs confirm the apex IS the API host, so it is left as published.'
+api_style: REST over HTTPS; JSON responses; JSON bodies on lottery/agent POSTs, multipart/form-data or x-www-form-urlencoded
+  (JSON also accepted on activate) on the Advertising POSTs
+authentication:
+  scheme: none for reads and transaction builders; one-time Bearer blm_ management token for affiliate management;
+    wallet-signature challenge for enrollment
+  detail: authentication/blocklottos-com-authentication.yml
+idempotency:
+  supported: true
+  coverage: partial
+  scope:
+  - prepareBaseAgentPurchase
+  - getOrCreateUnifiedAffiliateProfile
+  mechanism: 'idempotency_key request-body field on POST /api/lottery/agent-purchase (required, 8-128 chars, ^[A-Za-z0-9._:-]+$);
+    the response echoes idempotency_key and an idempotency_scope. POST /api/lottery/agent-referral is declared "idempotent:
+    true" (create-or-load) by /.well-known/affiliate-program.json.'
+  semantics: '"The idempotency key correlates preparation and confirmation but cannot prevent duplicate wallet broadcasts;
+    the wallet agent must submit each transaction at most once." (api-docs #agent-purchase). It is a correlation/replay-detection
+    key for the preparation step, not a server-side guarantee that a repeated call has no additional effect at the
+    money layer - the money layer is the wallet broadcast, which the API does not perform.'
+  header: Idempotency-Key appears in Access-Control-Allow-Headers on both endpoints (observed live) but is not documented
+    anywhere; treat the body field as the contract.
+  not_covered:
+  - buildLotteryTicketTx
+  - submitAd
+  - confirmAdSubmitPayment
+  - requestAdActivationQuote
+  - confirmAdActivationPayment
+  - confirmBaseTicketPurchase (naturally idempotent verification, no key)
+  retention: null
+  docs: https://blocklottos.com/api-docs#agent-purchase
+reversibility:
+  grade: none
+  summary: Nothing this API commits can be reversed through it, and the provider says so in its Terms.
+  write_surfaces:
+  - operation: prepareBaseAgentPurchase -> wallet broadcast
+    reversal: null
+    window: null
+    statement: '"All ticket purchases are final. Once a transaction is confirmed on the relevant blockchain network,
+      it cannot be reversed, refunded, or cancelled." (https://blocklottos.com/terms section 4)'
+  - operation: buildLotteryTicketTx -> wallet broadcast
+    reversal: null
+    window: null
+    statement: same Terms section 4
+  - operation: confirmAdSubmitPayment (1 USDC submit fee)
+    reversal: null
+    window: null
+    statement: '"Submission fees are non-refundable regardless of approval outcome." (Terms section 10)'
+  - operation: confirmAdActivationPayment (placement fee)
+    reversal: null
+    window: null
+    statement: '"Advertising fees are paid in USDC and are non-refundable once the advertisement has been approved
+      and activated." (Terms section 10); rejected/removed ads are "without refund"'
+  - operation: getOrCreateUnifiedAffiliateProfile
+    reversal: null
+    window: null
+    statement: 'affiliate-program.json: "The endpoint cannot change an existing payout wallet" (with a management
+      token it can update payout wallets; there is no delete/close operation)'
+  pre_commit_checkpoints:
+  - Quotes (submit/activate) expire after 1 hour - letting one lapse costs nothing.
+  - 'agent-purchase: max_price_usdc fails closed above the cap; valid_until rejects stale intents at preparation
+    time; nothing is committed until the wallet broadcasts.'
+  - confirm steps are read-only verifications and can be repeated.
+  docs: https://blocklottos.com/terms
+dry_run_mode:
+  supported: quote-first preview, no explicit flag
+  detail: submitAd, requestAdActivationQuote, buildLotteryTicketTx and prepareBaseAgentPurchase all return UNSIGNED
+    transactions plus the exact amount/recipient/calldata and commit nothing; the agent can inspect (and the provider's
+    MCP client re-validates) before deciding to sign. There is no dry_run parameter on the confirm/pay steps.
+pagination:
+  style: limit + starting id (draw history only)
+  request_params:
+    limit: 1-10, default 1 (getLotteryDrawHistory)
+    draw_id: specific draw to start from; omit for the latest completed draw
+  response_fields:
+    draws: array
+  cursor: false
+  unpaginated_lists:
+  - getLotteryTickets tickets[]
+  - getAdsByWallet ads[]
+  docs: https://blocklottos.com/api-docs#lottery-draw-history
+field_expansion:
+  supported: false
+sparse_fields:
+  supported: false
+metadata:
+  supported: false
+  note: agent_id (<=80 chars) on the agent endpoints is the only free-form caller label
+request_tracing:
+  request_id_header: null
+  correlation: execution_id (bl_...) returned by prepareBaseAgentPurchase and echoed to confirmBaseTicketPurchase;
+    quote_id (sq_/aq_) and submission_id (ad_N) on the Advertising API; tx_hash is the durable on-chain reference
+    (explorer_url https://basescan.org/tx/<hash> on confirmation)
+versioning:
+  scheme: none
+  detail: lifecycle/blocklottos-com-lifecycle.yml
+chain_selector:
+  param: chain
+  values:
+  - polygon
+  - base
+  default: polygon (GET endpoints and build-ticket-tx); the agent endpoints are Base-only
+  note: the default is Polygon while the recommended agent game is Base - always pass ?chain=base explicitly
+url_forms:
+  preferred: clean URLs (/api/jackpot, /api/stats)
+  legacy: .php aliases still served (/api/jackpot.php, /api/stats.php)
+caching:
+  read_endpoints: 'Cache-Control: public, max-age=60 (observed on jackpot, stats, draw-history); docs: "Responses
+    are cached for 60 seconds on read endpoints"'
+  wallet_endpoints: 'Cache-Control: no-cache (tickets, check-prizes)'
+  write_endpoints: 'Cache-Control: no-store'
+error_envelope:
+  shape: '{"status":"error","message":"..."} (lottery/agent) | {"error":"..."} (advertising)'
+  problem_json: false
+  detail: errors/blocklottos-com-problem-types.yml
+rate_limit_signaling:
+  status: 429
+  headers:
+  - Retry-After
+  body_field: retry_after (seconds)
+  quota_headers: none observed on 200 responses (no X-RateLimit-*/RateLimit-*)
+  detail: rate-limits/blocklottos-com-rate-limits.yml
+cors:
+  allow_origin: '*'
+  allow_methods: GET, OPTIONS on reads; POST, OPTIONS on writes
+  allow_headers: Content-Type (+ Authorization, X-BlockLottos-Agent, X-BlockLottos-Intent, Idempotency-Key on the
+    agent endpoints)
+agent_headers:
+  X-BlockLottos-Agent: optional identifier (docs curl examples)
+  X-BlockLottos-Intent: allowed by CORS, undocumented
+cross_links:
+  errors: errors/blocklottos-com-problem-types.yml
+  lifecycle: lifecycle/blocklottos-com-lifecycle.yml
+  authentication: authentication/blocklottos-com-authentication.yml
+  rate_limits: rate-limits/blocklottos-com-rate-limits.yml
+  plans: plans/blocklottos-com-plans-pricing.yml

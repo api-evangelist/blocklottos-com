@@ -1,0 +1,56 @@
+generated: '2026-09-19'
+method: searched
+source: https://pypi.org/pypi/blocklottos-mcp/json (2026-09-19); https://blocklottos.com/git/blocklottos-agent-tools.git
+  (cloned); https://blocklottos.com/agent-tools/. npm (blocklottos, blocklottos-mcp, @blocklottos/*) 404; no Maven/NuGet/Go/RubyGems/Packagist/crates.io
+  artifacts found; no GitHub org (github.com/blocklottos 404, registry-declared github.com/scosemicolon/blocklottos-agent-tools
+  404).
+note: 'Block Lottos publishes no general-purpose client SDK. Its only first-party package is the MCP server, which
+  embeds a small HTTP client (BlockLottosClient) for its own use. Recorded under Packages; NO type: SDKs pointer
+  is emitted because a developer looking for an SDK would not be served by it.'
+packages:
+- language: python
+  registry: pypi
+  name: blocklottos-mcp
+  kind: mcp-server (stdio)
+  url: https://pypi.org/project/blocklottos-mcp/
+  install: pip install blocklottos-mcp
+  official: true
+  license: MIT
+  requires_python: '>=3.10'
+  dependencies:
+  - httpx>=0.28,<1
+  - mcp>=2.0,<3
+  version: 1.0.2
+  published: '2026-09-10'
+  releases:
+  - version: 1.0.0
+    published: '2026-09-10'
+  - version: 1.0.1
+    published: '2026-09-10'
+  - version: 1.0.2
+    published: '2026-09-10'
+  currency_note: Three releases in twelve minutes on 2026-09-10; the API it wraps (OpenAPI 1.2.0, Last-Modified
+    2026-09-10) was published the same day, so the package is current with the contract.
+- language: python
+  registry: git
+  name: blocklottos-agent-tools
+  kind: source repository (MCP server + SKILL.md + tests)
+  url: https://blocklottos.com/git/blocklottos-agent-tools.git
+  install: uvx --from git+https://blocklottos.com/git/blocklottos-agent-tools.git blocklottos-mcp
+  official: true
+  license: MIT
+  version: 1.0.0
+  published: '2026-09-09'
+  currency_note: 'Version read from pyproject.toml at HEAD e2f3cb6 (commit date 2026-09-09). The self-hosted Git
+    HEAD (1.0.0) is BEHIND the PyPI release (1.0.2): the uvx-from-git install the provider documents everywhere
+    resolves to an older build than pip install does.'
+- language: python
+  registry: cdn
+  name: blocklottos-agent-tools-v1.0.0.zip
+  kind: versioned source archive
+  url: https://blocklottos.com/downloads/blocklottos-agent-tools-v1.0.0.zip
+  install: null
+  official: true
+  version: 1.0.0
+  published: null
+  currency_note: Version pinned in the file name; HEAD 200 on 2026-09-19. No publish date is exposed by the download.

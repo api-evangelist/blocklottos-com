@@ -1,0 +1,1449 @@
+# Block Lottos API — OpenAPI 3.1.0, harvested verbatim from https://blocklottos.com/openapi.json on 2026-09-19
+# (HTTP 200, application/json, Last-Modified 2026-09-10, 71,721 bytes, md5 d84270d63dcae8577accf4c9e5118662).
+# Faithful YAML rendering of openapi/_original/blocklottos-com-openapi.json — content unchanged.
+# Ownership: servers[] https://blocklottos.com, info.contact support@blocklottos.com, license url blocklottos.com/terms.
+openapi: 3.1.0
+info:
+  title: Block Lottos API
+  description: Public Block Lottos API for Polygon and Base lottery data, advertising, affiliates, and a Base-first non-custodial
+    agent purchase flow. A verified winning Polygon ticket receives at least 100 POL and a verified winning Base ticket receives
+    at least 100 USDC; a higher current jackpot applies when it exceeds the minimum.
+  version: 1.2.0
+  contact:
+    name: Block Lottos Support
+    email: support@blocklottos.com
+    url: https://blocklottos.com/contact
+  license:
+    name: Public
+    url: https://blocklottos.com/terms
+servers:
+- url: https://blocklottos.com
+  description: Production
+paths:
+  /api/jackpot.php:
+    get:
+      operationId: getJackpot
+      summary: Get current jackpot
+      description: Returns the selected game’s live on-chain jackpot, its published minimum winner payout, and the payable
+        winner amount, which is the higher of those values. Supports ?chain=polygon or ?chain=base.
+      tags:
+      - Lottery
+      responses:
+        '200':
+          description: Current jackpot amount
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jackpot_pol:
+                    type: number
+                    description: Polygon-only jackpot amount in POL. Present when chain=polygon.
+                    example: 142.5
+                  jackpot_wei:
+                    type: string
+                    description: Jackpot amount in wei (string to preserve precision)
+                    example: '142500000000000000000'
+                  contract:
+                    type: string
+                    description: Smart contract address
+                    example: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - error
+                  jackpot_usdc:
+                    type: number
+                    description: Base-only jackpot amount in USDC. Present when chain=base.
+                    example: 142.5
+                  onchain_jackpot:
+                    type: number
+                    description: Amount currently reported by the selected lottery smart contract.
+                  minimum_winner_payout:
+                    type: number
+                    description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game currency.
+                    example: 100
+                  winner_payout:
+                    type: number
+                    description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                    example: 100
+                  higher_live_jackpot_applies:
+                    type: boolean
+                    description: True when a live jackpot above the minimum becomes the payable winner amount.
+                    example: true
+                  minimum_winner_payout_pol:
+                    type: number
+                    description: Polygon minimum winner payout in POL.
+                    example: 100
+                  winner_payout_pol:
+                    type: number
+                    description: Polygon payable winner amount in POL.
+                    example: 100
+                  minimum_winner_payout_usdc:
+                    type: number
+                    description: Base minimum winner payout in USDC.
+                    example: 100
+                  winner_payout_usdc:
+                    type: number
+                    description: Base payable winner amount in USDC.
+                    example: 100
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '405':
+          description: Method not allowed
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+  /api/stats.php:
+    get:
+      operationId: getStats
+      summary: Get site stats
+      description: Returns the selected game’s live on-chain jackpot, its published minimum winner payout, and the payable
+        winner amount, which is the higher of those values. Supports ?chain=polygon or ?chain=base.
+      tags:
+      - Lottery
+      responses:
+        '200':
+          description: Site statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draw_number:
+                    type: integer
+                    description: Upcoming draw number
+                    example: 8
+                  jackpot_pol:
+                    type: number
+                    description: Polygon-only jackpot amount in POL. Present when chain=polygon.
+                    example: 142.5
+                  next_draw_timestamp:
+                    type: integer
+                    description: Unix timestamp of next draw (Saturdays 15:00 UTC)
+                    example: 1745589600
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - error
+                  jackpot_usdc:
+                    type: number
+                    description: Base-only jackpot amount in USDC. Present when chain=base.
+                    example: 142.5
+                  onchain_jackpot:
+                    type: number
+                    description: Amount currently reported by the selected lottery smart contract.
+                  minimum_winner_payout:
+                    type: number
+                    description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game currency.
+                    example: 100
+                  winner_payout:
+                    type: number
+                    description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                    example: 100
+                  higher_live_jackpot_applies:
+                    type: boolean
+                    description: True when a live jackpot above the minimum becomes the payable winner amount.
+                    example: true
+                  minimum_winner_payout_pol:
+                    type: number
+                    description: Polygon minimum winner payout in POL.
+                    example: 100
+                  winner_payout_pol:
+                    type: number
+                    description: Polygon payable winner amount in POL.
+                    example: 100
+                  minimum_winner_payout_usdc:
+                    type: number
+                    description: Base minimum winner payout in USDC.
+                    example: 100
+                  winner_payout_usdc:
+                    type: number
+                    description: Base payable winner amount in USDC.
+                    example: 100
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '405':
+          description: Method not allowed
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+  /api/ads/sizes:
+    get:
+      operationId: getAdSizes
+      summary: Get available ad sizes and pricing
+      description: 'Returns all available banner sizes with dimensions, pricing for 7/14/30 day durations, submission fee,
+        and any active discounts. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      responses:
+        '200':
+          description: Available ad sizes and pricing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sizes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 300x250
+                        width:
+                          type: integer
+                          example: 300
+                        height:
+                          type: integer
+                          example: 250
+                        label:
+                          type: string
+                        price_7d:
+                          type: number
+                          description: 7-day placement price in USDC
+                          example: 85
+                        price_14d:
+                          type: number
+                          description: 14-day placement price in USDC
+                          example: 140
+                        price_30d:
+                          type: number
+                          description: 30-day placement price in USDC
+                          example: 250
+                        discount_pct:
+                          type: number
+                          example: 0
+                        discount_expires:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                        discounted_price_7d:
+                          type: number
+                          description: Discounted 7-day price in USDC
+                        discounted_price_14d:
+                          type: number
+                          description: Discounted 14-day price in USDC
+                        discounted_price_30d:
+                          type: number
+                          description: Discounted 30-day price in USDC
+                  submit_fee:
+                    type: number
+                    description: Non-refundable submission quote fee in USDC
+                    example: 1
+                  currency:
+                    type: string
+                    example: USDC
+        '429':
+          description: Rate limit exceeded
+  /api/ads/submit:
+    post:
+      operationId: submitAd
+      summary: Submit an ad (quote-first flow, step 1)
+      description: 'Submit ad details and an image to get a payment quote. Returns a quote_id and an unsigned USDC transfer
+        transaction. The caller signs and broadcasts the transaction from their Web3 wallet, then calls POST /api/ads/submit/pay
+        to finalise. Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - image
+              - size_id
+              - target_url
+              - wallet_address
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Banner image file. Dimensions must exactly match size_id.
+                size_id:
+                  type: string
+                  description: Ad size ID from /api/ads/sizes
+                  example: 300x250
+                target_url:
+                  type: string
+                  format: uri
+                  description: URL the ad should link to
+                  example: https://example.com
+                wallet_address:
+                  type: string
+                  description: EVM wallet address that will make payment
+                  example: '0x000000000000000000000000000000000000dEaD'
+                network:
+                  type: string
+                  description: USDC payment network
+                  enum:
+                  - polygon
+                  - base
+                  - avalanche
+                  - ethereum
+                  - arbitrum
+                  - optimism
+                  - bnb
+                  default: polygon
+      responses:
+        '200':
+          description: Quote generated - sign and broadcast the transaction, then call /api/ads/submit/pay
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote_id:
+                    type: string
+                    description: Use this in the /api/ads/submit/pay call
+                    example: sq_abc123
+                  status:
+                    type: string
+                    example: awaiting_payment
+                  expires_at:
+                    type: string
+                    format: date-time
+                  payment:
+                    type: object
+                    description: Unsigned USDC transfer transaction and payment metadata
+                  next_step:
+                    type: string
+        '400':
+          description: Invalid input
+        '429':
+          description: Rate limit exceeded
+  /api/ads/submit/pay:
+    post:
+      operationId: confirmAdSubmitPayment
+      summary: Confirm ad payment (quote-first flow, step 2)
+      description: After broadcasting the USDC payment transaction, call this endpoint with quote_id and transaction hash
+        to finalise the submission. The system verifies the transaction on-chain. Accepts application/json or form-encoded
+        bodies.
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  description: Quote ID from POST /api/ads/submit
+                  example: q_123456
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  description: Quote ID from POST /api/ads/submit
+                  example: q_123456
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+      responses:
+        '200':
+          description: Submission confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  submission_id:
+                    type: string
+                    description: Use this to check status
+                    example: ad_42
+                  status:
+                    type: string
+                    example: pending_review
+                  message:
+                    type: string
+                    example: Ad submitted successfully and is pending review.
+        '400':
+          description: Invalid quote_id or tx_hash
+        '402':
+          description: Payment not verified on-chain
+  /api/ads/status/{submission_id}:
+    get:
+      operationId: getAdStatus
+      summary: Check ad submission status
+      description: 'Returns the current status of a submitted ad. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      parameters:
+      - name: submission_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Submission ID returned by /api/ads/submit/pay (e.g. ad_42)
+        example: ad_42
+      responses:
+        '200':
+          description: Ad status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  submission_id:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - pending_review
+                    - approved
+                    - rejected
+                    - active
+                    - expired
+                    description: Current status of the ad
+                  banner_size:
+                    type: string
+                  target_url:
+                    type: string
+                  submitted_at:
+                    type: string
+                    format: date-time
+                  reviewed_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                  expires_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+        '404':
+          description: Submission not found
+  /api/ads/wallet/{wallet_address}:
+    get:
+      operationId: getAdsByWallet
+      summary: Get all ads for a wallet
+      description: 'Returns all ad submissions associated with an EVM wallet address. Useful for bots to discover their submission
+        IDs and track statuses. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      parameters:
+      - name: wallet_address
+        in: path
+        required: true
+        schema:
+          type: string
+        description: EVM wallet address (0x...)
+        example: 0xYourWalletAddress
+      responses:
+        '200':
+          description: List of ads for this wallet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wallet:
+                    type: string
+                  ads:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        submission_id:
+                          type: string
+                        status:
+                          type: string
+                        banner_size:
+                          type: string
+                        target_url:
+                          type: string
+                        submitted_at:
+                          type: string
+                          format: date-time
+                        expires_at:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+        '400':
+          description: Invalid wallet address
+  /api/lottery/build-ticket-tx:
+    post:
+      operationId: buildLotteryTicketTx
+      summary: Build an unsigned lottery ticket transaction
+      description: Builds transaction data for buying a lottery ticket. Polygon returns a native POL value transaction. Base
+        returns a USDC approval transaction plus a zero-value ticket purchase transaction.
+      tags:
+      - Lottery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - wallet_address
+              - numbers
+              properties:
+                chain:
+                  type: string
+                  enum:
+                  - polygon
+                  - base
+                  default: polygon
+                wallet_address:
+                  type: string
+                  example: '0x000000000000000000000000000000000000dEaD'
+                numbers:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 1
+                    maximum: 49
+                  minItems: 6
+                  maxItems: 6
+                  example:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                referral_id:
+                  type: string
+                  description: Optional Base referral ID as 0x bytes32 or a short code up to 32 characters.
+                max_price_usdc:
+                  type: string
+                  description: Optional Base safety cap. Request fails closed if the live ticket price exceeds this USDC amount.
+                  example: '1.00'
+                idempotency_key:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  description: Optional caller-generated correlation key. It makes preparation correlation deterministic but
+                    does not prevent duplicate wallet broadcasts; the wallet agent must submit each transaction at most once.
+                valid_until:
+                  type: string
+                  format: date-time
+                  description: Purchase-intent expiry checked during transaction preparation. Must include an explicit timezone
+                    and be no more than 7 days ahead. The contract transaction has no deadline parameter, so the wallet must
+                    recheck expiry before broadcasting.
+                agent_id:
+                  type: string
+                  maxLength: 80
+                  description: Optional privacy-safe agent label for internal attribution.
+      responses:
+        '200':
+          description: Unsigned transaction payloads ready for wallet signing
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '503':
+          description: RPC unavailable
+  /api/lottery/tickets/{wallet}:
+    get:
+      operationId: getLotteryTickets
+      summary: Get wallet tickets for the active draw
+      description: Returns tickets purchased by a wallet for the active draw on Polygon or Base.
+      tags:
+      - Lottery
+      parameters:
+      - name: wallet
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+      responses:
+        '200':
+          description: Wallet ticket list
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '503':
+          description: RPC unavailable
+  /api/lottery/draw-history:
+    get:
+      operationId: getLotteryDrawHistory
+      summary: Get lottery draw history
+      description: Returns recent completed on-chain draw results from Polygon or Base. If no on-chain draw has completed
+        yet, returns published public draw results from the website result JSON files.
+      tags:
+      - Lottery
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+      - name: draw_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 1
+      responses:
+        '200':
+          description: Live draw history for the selected chain. Call this endpoint for current data; do not rely on copied
+            examples.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '503':
+          description: RPC unavailable
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+      externalDocs:
+        description: Public result JSON files
+        url: https://blocklottos.com/data/draws/latest.json
+  /api/lottery/draw-proof:
+    get:
+      operationId: getLotteryDrawProof
+      summary: Get public draw proof
+      description: Returns the public cutoff commitment or completed draw proof for Polygon Fortune Ledger or Base Future
+        Ledger. During cutoff, winning numbers and the secret seed are hidden. After draw runtime, the proof includes the
+        revealed seed, chain anchor block, final seed, and winning numbers.
+      tags:
+      - Lottery
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+      - name: draw_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Specific draw ID. Omit for the latest public proof.
+      responses:
+        '200':
+          description: Public cutoff or completed draw proof
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '404':
+          description: No public proof is available yet
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+      externalDocs:
+        description: Human-readable proof page
+        url: https://blocklottos.com/draw-proof
+  /api/lottery/check-prizes/{wallet}:
+    get:
+      operationId: checkLotteryPrizes
+      summary: Check outstanding failed prize payout for a wallet
+      description: Checks whether a wallet has an outstanding failed on-chain prize transfer that can be retried through retrySendPrize().
+        This endpoint covers contract transfer status only; use winner_payout fields from jackpot, stats, or agent capabilities
+        for the game’s complete minimum and payable amount.
+      tags:
+      - Lottery
+      parameters:
+      - name: wallet
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+      responses:
+        '200':
+          description: Outstanding failed-prize payout status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '503':
+          description: RPC unavailable
+  /api/ads/activate:
+    post:
+      operationId: requestAdActivationQuote
+      summary: Request an ad activation quote
+      description: 'Request an activation quote for an approved ad. Returns current duration pricing and an unsigned USDC
+        transfer transaction. Accepts application/json or form-encoded bodies. Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - submission_id
+              - duration
+              - wallet_address
+              properties:
+                submission_id:
+                  type: string
+                  example: ad_42
+                duration:
+                  type: string
+                  enum:
+                  - 7d
+                  - 14d
+                  - 30d
+                wallet_address:
+                  type: string
+                  description: EVM wallet address that will make payment
+                  example: '0x000000000000000000000000000000000000dEaD'
+                network:
+                  type: string
+                  enum:
+                  - polygon
+                  - base
+                  - avalanche
+                  - ethereum
+                  - arbitrum
+                  - optimism
+                  - bnb
+                  default: polygon
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - submission_id
+              - duration
+              - wallet_address
+              properties:
+                submission_id:
+                  type: string
+                duration:
+                  type: string
+                wallet_address:
+                  type: string
+                network:
+                  type: string
+      responses:
+        '200':
+          description: Activation quote generated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid input
+        '404':
+          description: Submission not found
+        '409':
+          description: Ad is not approved
+  /api/ads/activate/pay:
+    post:
+      operationId: confirmAdActivationPayment
+      summary: Confirm ad activation payment
+      description: 'After broadcasting the USDC activation payment transaction, call this endpoint with quote_id and transaction
+        hash. The system verifies payment on-chain before activating the ad. Accepts application/json or form-encoded bodies.
+        Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  example: aq_xyz789
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  example: aq_xyz789
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+      responses:
+        '200':
+          description: Ad activated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid quote_id or tx_hash
+        '402':
+          description: Payment not verified on-chain
+        '404':
+          description: Quote or ad not found
+        '409':
+          description: Quote already used or ad state changed
+  /api/lottery/jackpot:
+    get:
+      operationId: getLotteryJackpotAlias
+      summary: Get current jackpot
+      description: Returns the selected game’s live on-chain jackpot, its published minimum winner payout, and the payable
+        winner amount, which is the higher of those values. Supports ?chain=polygon or ?chain=base. Alias route.
+      tags:
+      - Lottery
+      responses:
+        '200':
+          description: Current jackpot amount
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jackpot_pol:
+                    type: number
+                    description: Polygon-only jackpot amount in POL. Present when chain=polygon.
+                    example: 142.5
+                  jackpot_wei:
+                    type: string
+                    description: Jackpot amount in wei (string to preserve precision)
+                    example: '142500000000000000000'
+                  contract:
+                    type: string
+                    description: Smart contract address
+                    example: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - error
+                  jackpot_usdc:
+                    type: number
+                    description: Base-only jackpot amount in USDC. Present when chain=base.
+                    example: 142.5
+                  onchain_jackpot:
+                    type: number
+                    description: Amount currently reported by the selected lottery smart contract.
+                  minimum_winner_payout:
+                    type: number
+                    description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game currency.
+                    example: 100
+                  winner_payout:
+                    type: number
+                    description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                    example: 100
+                  higher_live_jackpot_applies:
+                    type: boolean
+                    description: True when a live jackpot above the minimum becomes the payable winner amount.
+                    example: true
+                  minimum_winner_payout_pol:
+                    type: number
+                    description: Polygon minimum winner payout in POL.
+                    example: 100
+                  winner_payout_pol:
+                    type: number
+                    description: Polygon payable winner amount in POL.
+                    example: 100
+                  minimum_winner_payout_usdc:
+                    type: number
+                    description: Base minimum winner payout in USDC.
+                    example: 100
+                  winner_payout_usdc:
+                    type: number
+                    description: Base payable winner amount in USDC.
+                    example: 100
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '405':
+          description: Method not allowed
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+  /api/lottery/stats:
+    get:
+      operationId: getLotteryStatsAlias
+      summary: Get site stats
+      description: Returns the selected game’s live on-chain jackpot, its published minimum winner payout, and the payable
+        winner amount, which is the higher of those values. Supports ?chain=polygon or ?chain=base. Alias route.
+      tags:
+      - Lottery
+      responses:
+        '200':
+          description: Site statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draw_number:
+                    type: integer
+                    description: Upcoming draw number
+                    example: 8
+                  jackpot_pol:
+                    type: number
+                    description: Polygon-only jackpot amount in POL. Present when chain=polygon.
+                    example: 142.5
+                  next_draw_timestamp:
+                    type: integer
+                    description: Unix timestamp of next draw (Saturdays 15:00 UTC)
+                    example: 1745589600
+                  status:
+                    type: string
+                    enum:
+                    - ok
+                    - error
+                  jackpot_usdc:
+                    type: number
+                    description: Base-only jackpot amount in USDC. Present when chain=base.
+                    example: 142.5
+                  onchain_jackpot:
+                    type: number
+                    description: Amount currently reported by the selected lottery smart contract.
+                  minimum_winner_payout:
+                    type: number
+                    description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game currency.
+                    example: 100
+                  winner_payout:
+                    type: number
+                    description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                    example: 100
+                  higher_live_jackpot_applies:
+                    type: boolean
+                    description: True when a live jackpot above the minimum becomes the payable winner amount.
+                    example: true
+                  minimum_winner_payout_pol:
+                    type: number
+                    description: Polygon minimum winner payout in POL.
+                    example: 100
+                  winner_payout_pol:
+                    type: number
+                    description: Polygon payable winner amount in POL.
+                    example: 100
+                  minimum_winner_payout_usdc:
+                    type: number
+                    description: Base minimum winner payout in USDC.
+                    example: 100
+                  winner_payout_usdc:
+                    type: number
+                    description: Base payable winner amount in USDC.
+                    example: 100
+        '400':
+          description: Invalid input or unsupported chain. Use polygon or base.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Unsupported chain. Use polygon or base.
+        '405':
+          description: Method not allowed
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - polygon
+          - base
+          default: polygon
+        description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
+  /api/lottery/agent-capabilities:
+    get:
+      operationId: getBaseAgentCapabilities
+      summary: Get live Base-first agent capabilities
+      description: Returns authoritative Base USDC payment details, on-chain jackpot, 100 USDC minimum winner payout, payable
+        winner amount, complete purchase workflow, referral route, and owner-defined safety policy.
+      tags:
+      - Lottery
+      - Agents
+      responses:
+        '200':
+          description: Live Base agent capability document
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  game:
+                    type: object
+                    properties:
+                      onchain_jackpot:
+                        type: number
+                        description: Amount currently reported by the selected lottery smart contract.
+                      minimum_winner_payout:
+                        type: number
+                        description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game
+                          currency.
+                        example: 100
+                      winner_payout:
+                        type: number
+                        description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                        example: 100
+                      winner_payout_policy:
+                        type: object
+                        properties:
+                          currency:
+                            type: string
+                            example: USDC
+                          minimum:
+                            type: number
+                            example: 100
+                          higher_live_jackpot_applies:
+                            type: boolean
+                            example: true
+                          summary:
+                            type: string
+                  workflow:
+                    type: array
+                    items:
+                      type: object
+                  safety:
+                    type: array
+                    items:
+                      type: string
+                additionalProperties: true
+        '429':
+          description: Rate limit exceeded
+  /api/lottery/agent-referral:
+    post:
+      operationId: getOrCreateUnifiedAffiliateProfile
+      summary: Create or load one shared multi-chain affiliate profile
+      description: 'One shared affiliate profile for humans, bots, agents, and LLMs. Secure enrollment is two-step: request
+        action=challenge, sign the returned message with the EVM identity wallet, then resubmit challenge_id and signature.
+        Solana and Cardano are supported as payout wallets. The one-time management token authorizes payout-wallet updates
+        and private balances.'
+      tags:
+      - Lottery
+      - Agents
+      - Affiliate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                  description: Backward-compatible EVM identity wallet.
+                primary_chain:
+                  type: string
+                  enum:
+                  - evm
+                  default: evm
+                  description: EVM identity chain used for ownership proof. Solana and Cardano remain available as payout
+                    wallets after secure enrollment.
+                connected_wallet:
+                  type: string
+                  maxLength: 180
+                  description: Identity wallet on primary_chain. Defaults to wallet_address.
+                evm_wallet:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                solana_wallet:
+                  type: string
+                  pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
+                cardano_wallet:
+                  type: string
+                  pattern: ^(addr1|stake1)[0-9a-zA-Z]+$
+                agent_id:
+                  type: string
+                  maxLength: 80
+                action:
+                  type: string
+                  enum:
+                  - challenge
+                  - manage
+                  default: manage
+                  description: Use challenge first to obtain the exact message the identity wallet must sign.
+                challenge_id:
+                  type: string
+                  pattern: ^[0-9a-f]{48}$
+                signature:
+                  type: string
+                  description: EVM personal_sign 65-byte hex signature or Solana Ed25519 64-byte hex signature over the exact
+                    challenge message.
+              anyOf:
+              - required:
+                - wallet_address
+              - required:
+                - primary_chain
+                - connected_wallet
+      responses:
+        '200':
+          description: Public referral identity, plus a newly issued or rotated one-time management token and private profile
+            data after successful ownership proof; subsequent private data requires Bearer authorization
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid or unsafe request
+        '503':
+          description: Affiliate service unavailable
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          pattern: ^Bearer blm_[0-9a-f]{64}$
+        description: Required for payout-wallet changes and private monitoring. Use the one-time management token returned
+          only when a new profile is created.
+  /api/lottery/agent-purchase:
+    post:
+      operationId: prepareBaseAgentPurchase
+      summary: Prepare one bounded Base USDC ticket purchase
+      description: Base-only non-custodial endpoint. Each call prepares exactly one ticket to prevent accidental batching;
+        agents may make multiple purchase calls for as many tickets as the wallet owner permits. Reads the live contract ticket
+        price, checks the wallet’s USDC balance and allowance where RPC permits, returns an exact one-ticket approval transaction
+        plus the unsigned ticket transaction, and never receives private keys, signs, or broadcasts.
+      tags:
+      - Lottery
+      - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - wallet_address
+              - numbers
+              - max_price_usdc
+              - idempotency_key
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                numbers:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 1
+                    maximum: 49
+                  minItems: 6
+                  maxItems: 6
+                  uniqueItems: true
+                max_price_usdc:
+                  type: string
+                  example: '1.00'
+                  description: Fail-closed maximum. The endpoint currently prepares one 1 USDC ticket.
+                referral_id:
+                  type: string
+                  maxLength: 66
+                  description: Optional code returned by agent-referral or 0x bytes32.
+                idempotency_key:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  pattern: ^[A-Za-z0-9._:-]+$
+                  description: Required correlation key. It does not prevent duplicate wallet broadcasts; submit each returned
+                    transaction at most once.
+                valid_until:
+                  type: string
+                  format: date-time
+                  description: Optional preparation expiry with an explicit timezone, no more than 7 days ahead. The wallet
+                    must recheck it before broadcasting because the contract call has no deadline parameter.
+                agent_id:
+                  type: string
+                  maxLength: 80
+      responses:
+        '200':
+          description: Exact unsigned Base transactions and execution steps
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid or unsafe request
+        '409':
+          description: Price cap exceeded or intent expired
+        '503':
+          description: RPC unavailable
+  /api/lottery/confirm-ticket-tx:
+    post:
+      operationId: confirmBaseTicketPurchase
+      summary: Verify a Base ticket purchase on chain
+      description: Checks receipt success, sender, active contract, purchase selector and TicketPurchased event before recording
+        private agent attribution.
+      tags:
+      - Lottery
+      - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tx_hash
+              - wallet_address
+              properties:
+                tx_hash:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{64}$
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                execution_id:
+                  type: string
+                  maxLength: 80
+                agent_id:
+                  type: string
+                  maxLength: 80
+      responses:
+        '200':
+          description: Verified TicketPurchased event and decoded numbers
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '202':
+          description: Transaction still pending
+        '400':
+          description: Invalid or unsafe request
+        '409':
+          description: Failed or mismatched transaction
+        '503':
+          description: RPC or private attribution log unavailable
+tags:
+- name: Lottery
+  description: Lottery data and transaction builders for Polygon Fortune Ledger and Base Future Ledger
+- name: Advertising
+  description: Display advertising API - submit, manage, and track ads on Block Lottos.
+externalDocs:
+  description: Full API documentation
+  url: https://blocklottos.com/api-docs
+x-blocklottos-active-contracts:
+  polygon:
+    name: Polygon Fortune Ledger
+    chain_id: 137
+    contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+    ticket_price: 10 POL
+    ticket_token: native POL
+    draw_time_utc: Saturday 15:00
+  base:
+    name: Base Future Ledger
+    chain_id: 8453
+    contract: '0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a'
+    ticket_price: 1 USDC
+    ticket_token: official Base USDC
+    ticket_token_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+    draw_time_utc: Saturday 16:00
+x-block-lottos-agent-default:
+  chain: base
+  game: Base Future Ledger
+  chain_id: 8453
+  ticket_currency: USDC
+  ticket_price: 1 USDC
+  payment_token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  gas_currency: ETH
+  gas_note: ETH is required only for Base network gas.
+  capabilities_url: https://blocklottos.com/api/lottery/agent-capabilities
+  non_custodial: true
+  minimum_winner_payout: 100 USDC
+  higher_live_jackpot_applies: true
+x-blocklottos-winner-payout-policy:
+  polygon:
+    minimum: 100
+    currency: POL
+    higher_live_jackpot_applies: true
+  base:
+    minimum: 100
+    currency: USDC
+    higher_live_jackpot_applies: true
+  outcome_note: These minimums apply only after a ticket is verified as a winner. They do not guarantee that any ticket will
+    win.
+security: []

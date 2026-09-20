@@ -1,0 +1,167 @@
+generated: '2026-09-19'
+method: probed
+source: Live GET probes on 2026-09-19 (curl, browser User-Agent) of the closed well-known path list on blocklottos.com
+  and www.blocklottos.com. Every row is a request that was issued; every status is the one returned.
+summary:
+  hosts_probed: 2
+  paths_probed: 36
+  documents_served: 4
+  note: 'Block Lottos serves an OpenAI-style ai-plugin manifest and an agent card at the LEGACY /.well-known/agent.json
+    path (the canonical agent-card.json 404s), plus two provider-defined manifests (agent-actions.json, affiliate-program.json)
+    that its llms.txt, agents.txt and robots.txt all point at. No security.txt, no OAuth/OIDC metadata (the API
+    is key-less), no RFC 9727 api-catalog, no apis.json. Unknown paths return a real HTTP 404 with an HTML "Page
+    not found" body, so the misses are genuine, not SPA-shell false negatives. There is no separate API, docs or
+    MCP host: the API base is the apex, and the MCP server is a local stdio package with no remote endpoint (see
+    mcp/).'
+  pointer_rule: 'type: WellKnown emitted because /.well-known/ai-plugin.json and /.well-known/agent.json returned
+    200 with real JSON documents. No SecurityTxt pointer: security.txt is 404.'
+hosts:
+- host: blocklottos.com
+  role: 'Apex: website, API base (servers[] https://blocklottos.com), docs host (/api-docs) and self-hosted Git
+    (/git/).'
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    standard: RFC 9116
+  - path: /.well-known/openid-configuration
+    status: 404
+    standard: OpenID Connect Discovery 1.0
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    standard: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    standard: RFC 9728
+  - path: /.well-known/api-catalog
+    status: 404
+    standard: RFC 9727
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: blocklottos-com-ai-plugin.json
+    content_type: application/json
+    standard: OpenAI ai-plugin manifest (schema_version v1)
+    note: auth.type none; api.type openapi -> https://blocklottos.com/openapi.json; contact support@blocklottos.com
+  - path: /.well-known/agent-card.json
+    status: 404
+    standard: A2A 1.0.0 canonical path
+    note: Real 404 (HTML "Page not found", noindex) - not an SPA shell.
+  - path: /.well-known/agent.json
+    status: 200
+    file: ../a2a/blocklottos-com-agent-card.json
+    content_type: application/json
+    standard: A2A pre-0.3 legacy path
+    note: 'application/json, 9,487 bytes. Saved verbatim to a2a/ and graded in a2a/blocklottos-com-a2a.yml (flavored:
+      no protocolVersion).'
+  - path: /.well-known/agent-actions.json
+    status: 200
+    file: blocklottos-com-agent-actions.json
+    content_type: application/json
+    standard: non-standard (provider-defined "Agent Actions" manifest, schema_version 2026-09-08)
+    note: Named by the provider llms.txt, agents.txt and robots.txt Allow list; lists 8 actions with method/url/body
+      templates.
+  - path: /.well-known/affiliate-program.json
+    status: 200
+    file: blocklottos-com-affiliate-program.json
+    content_type: application/json
+    standard: non-standard (provider-defined affiliate manifest, schema_version 2026-09-10)
+    note: 5% commission, wallet-based multi-chain profile, agent enrollment endpoint.
+  - path: /.well-known/ucp.json
+    status: 404
+    standard: UCP
+  - path: /.well-known/acp.json
+    status: 404
+    standard: ACP
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    standard: AAuth (draft-hardt-oauth-aauth-protocol)
+  - path: /.well-known/apis.json
+    status: 404
+    standard: APIs.json
+  - path: /apis.json
+    status: 404
+    standard: APIs.json (primary root location)
+  - path: /apis.yml
+    status: 404
+    standard: APIs.json (YAML serialization)
+  - path: /.well-known/mcp.json
+    status: 404
+    standard: MCP server card (non-standard)
+  - path: /.well-known/agent-skills.json
+    status: 404
+    standard: agent skill index (non-standard)
+- host: www.blocklottos.com
+  role: 'Redirect host - every path answers 301 to the same path on blocklottos.com (probed 2026-09-19: / and /.well-known/agent.json
+    both 301 -> apex). Rows below record the observed 301, not the apex document.'
+  documents:
+  - path: /.well-known/security.txt
+    status: 301
+    redirect: https://blocklottos.com/.well-known/security.txt
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/openid-configuration
+    status: 301
+    redirect: https://blocklottos.com/.well-known/openid-configuration
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/oauth-authorization-server
+    status: 301
+    redirect: https://blocklottos.com/.well-known/oauth-authorization-server
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/oauth-protected-resource
+    status: 301
+    redirect: https://blocklottos.com/.well-known/oauth-protected-resource
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/api-catalog
+    status: 301
+    redirect: https://blocklottos.com/.well-known/api-catalog
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/ai-plugin.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/ai-plugin.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/agent-card.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/agent-card.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/agent.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/agent.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/agent-actions.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/agent-actions.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/affiliate-program.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/affiliate-program.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/ucp.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/ucp.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/acp.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/acp.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/aauth-resource.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/aauth-resource.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/apis.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/apis.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /apis.json
+    status: 301
+    redirect: https://blocklottos.com/apis.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /apis.yml
+    status: 301
+    redirect: https://blocklottos.com/apis.yml
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/mcp.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/mcp.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.
+  - path: /.well-known/agent-skills.json
+    status: 301
+    redirect: https://blocklottos.com/.well-known/agent-skills.json
+    note: 301 Moved Permanently to the apex; the apex row is authoritative.

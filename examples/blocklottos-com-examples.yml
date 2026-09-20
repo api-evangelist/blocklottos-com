@@ -1,0 +1,196 @@
+generated: '2026-09-19'
+method: derived
+source: openapi/blocklottos-com-openapi.yml - schema-level example values and response examples present in the provider
+  document (16 operations carry at least one); cURL request examples for every endpoint are published at https://blocklottos.com/api-docs
+  (#ads-quickstart and inline per operation) and are referenced, not copied.
+docs_examples:
+  url: https://blocklottos.com/api-docs#ads-quickstart
+  languages:
+  - curl
+  note: Advertising quick start (7 curl steps) plus per-operation curl for each agent endpoint.
+operations:
+- operationId: getJackpot
+  method: GET
+  path: /api/jackpot.php
+  response_field_examples:
+    '200':
+      jackpot_pol: 142.5
+      jackpot_wei: '142500000000000000000'
+      contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+      jackpot_usdc: 142.5
+      minimum_winner_payout: 100
+      winner_payout: 100
+      higher_live_jackpot_applies: true
+      minimum_winner_payout_pol: 100
+      winner_payout_pol: 100
+      minimum_winner_payout_usdc: 100
+      winner_payout_usdc: 100
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getStats
+  method: GET
+  path: /api/stats.php
+  response_field_examples:
+    '200':
+      draw_number: 8
+      jackpot_pol: 142.5
+      next_draw_timestamp: 1745589600
+      jackpot_usdc: 142.5
+      minimum_winner_payout: 100
+      winner_payout: 100
+      higher_live_jackpot_applies: true
+      minimum_winner_payout_pol: 100
+      winner_payout_pol: 100
+      minimum_winner_payout_usdc: 100
+      winner_payout_usdc: 100
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getAdSizes
+  method: GET
+  path: /api/ads/sizes
+  response_field_examples:
+    '200':
+      sizes[].id: 300x250
+      sizes[].width: 300
+      sizes[].height: 250
+      sizes[].price_7d: 85
+      sizes[].price_14d: 140
+      sizes[].price_30d: 250
+      sizes[].discount_pct: 0
+      submit_fee: 1
+      currency: USDC
+- operationId: submitAd
+  method: POST
+  path: /api/ads/submit
+  request_field_examples:
+    size_id: 300x250
+    target_url: https://example.com
+    wallet_address: '0x000000000000000000000000000000000000dEaD'
+  response_field_examples:
+    '200':
+      quote_id: sq_abc123
+      status: awaiting_payment
+- operationId: confirmAdSubmitPayment
+  method: POST
+  path: /api/ads/submit/pay
+  request_field_examples:
+    quote_id: q_123456
+    tx_hash: 0xabc123...
+  response_field_examples:
+    '200':
+      submission_id: ad_42
+      status: pending_review
+      message: Ad submitted successfully and is pending review.
+- operationId: buildLotteryTicketTx
+  method: POST
+  path: /api/lottery/build-ticket-tx
+  request_field_examples:
+    wallet_address: '0x000000000000000000000000000000000000dEaD'
+    numbers:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    max_price_usdc: '1.00'
+  response_field_examples:
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getLotteryTickets
+  method: GET
+  path: /api/lottery/tickets/{wallet}
+  response_field_examples:
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getLotteryDrawHistory
+  method: GET
+  path: /api/lottery/draw-history
+  response_field_examples:
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getLotteryDrawProof
+  method: GET
+  path: /api/lottery/draw-proof
+  response_field_examples:
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: checkLotteryPrizes
+  method: GET
+  path: /api/lottery/check-prizes/{wallet}
+  response_field_examples:
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: requestAdActivationQuote
+  method: POST
+  path: /api/ads/activate
+  request_field_examples:
+    submission_id: ad_42
+    wallet_address: '0x000000000000000000000000000000000000dEaD'
+- operationId: confirmAdActivationPayment
+  method: POST
+  path: /api/ads/activate/pay
+  request_field_examples:
+    quote_id: aq_xyz789
+    tx_hash: 0xabc123...
+- operationId: getLotteryJackpotAlias
+  method: GET
+  path: /api/lottery/jackpot
+  response_field_examples:
+    '200':
+      jackpot_pol: 142.5
+      jackpot_wei: '142500000000000000000'
+      contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+      jackpot_usdc: 142.5
+      minimum_winner_payout: 100
+      winner_payout: 100
+      higher_live_jackpot_applies: true
+      minimum_winner_payout_pol: 100
+      winner_payout_pol: 100
+      minimum_winner_payout_usdc: 100
+      winner_payout_usdc: 100
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getLotteryStatsAlias
+  method: GET
+  path: /api/lottery/stats
+  response_field_examples:
+    '200':
+      draw_number: 8
+      jackpot_pol: 142.5
+      next_draw_timestamp: 1745589600
+      jackpot_usdc: 142.5
+      minimum_winner_payout: 100
+      winner_payout: 100
+      higher_live_jackpot_applies: true
+      minimum_winner_payout_pol: 100
+      winner_payout_pol: 100
+      minimum_winner_payout_usdc: 100
+      winner_payout_usdc: 100
+    '400':
+      status: error
+      message: Unsupported chain. Use polygon or base.
+- operationId: getBaseAgentCapabilities
+  method: GET
+  path: /api/lottery/agent-capabilities
+  response_field_examples:
+    '200':
+      status: ok
+      game.minimum_winner_payout: 100
+      game.winner_payout: 100
+      game.winner_payout_policy.currency: USDC
+      game.winner_payout_policy.minimum: 100
+      game.winner_payout_policy.higher_live_jackpot_applies: true
+- operationId: prepareBaseAgentPurchase
+  method: POST
+  path: /api/lottery/agent-purchase
+  request_field_examples:
+    max_price_usdc: '1.00'

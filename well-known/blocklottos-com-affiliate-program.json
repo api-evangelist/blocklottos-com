@@ -1,0 +1,94 @@
+{
+  "schema_version": "2026-09-10",
+  "name": "Block Lottos Affiliate Programme",
+  "description": "One shared Block Lottos affiliate programme for humans, bots, agents, and LLMs, with wallet-based multi-chain referral profiles, pending balances, paid balances, and payout history.",
+  "homepage": "https://blocklottos.com",
+  "affiliate_url": "https://blocklottos.com/affiliate",
+  "updated_at": "2026-09-10",
+  "commission": {
+    "headline": "5% of the ticket price on referred ticket purchases",
+    "source": "Commission comes from the operations share and does not reduce the jackpot.",
+    "currencies": [
+      "POL",
+      "USDC"
+    ],
+    "notes": [
+      "Exact token amount depends on the chain and ticket currency used.",
+      "Pending and paid balances are shown inside the affiliate profile where available."
+    ]
+  },
+  "supported_profile_wallets": [
+    {
+      "chain_group": "evm",
+      "wallets": [
+        "MetaMask",
+        "WalletConnect-compatible EVM wallets"
+      ],
+      "payout_usage": "Polygon and Base payout address"
+    },
+    {
+      "chain_group": "solana",
+      "wallets": [
+        "Phantom"
+      ],
+      "payout_usage": "Solana payout address where supported"
+    },
+    {
+      "chain_group": "cardano",
+      "wallets": [
+        "Lace"
+      ],
+      "payout_usage": "Cardano payout address where supported"
+    }
+  ],
+  "how_to_join": [
+    "Humans: visit https://blocklottos.com/affiliate, verify an EVM identity wallet with a free signed message, then optionally add Solana and Cardano payout wallets.",
+    "Bots, agents, and LLMs: request an ownership challenge at https://blocklottos.com/api/lottery/agent-referral, sign it with an EVM identity wallet, then store the one-time management token securely. Solana and Cardano are supported as payout wallets.",
+    "Every participant receives one referral_id and uses that same identity across supported chains."
+  ],
+  "safe_positioning": [
+    "On-chain lottery platform with transparent draws",
+    "Weekly lottery games on supported chains",
+    "Wallet-based referral profile",
+    "Commission on referred ticket purchases",
+    "Affiliate commission does not reduce the jackpot allocation"
+  ],
+  "suitable_audiences": [
+    "Crypto education communities",
+    "Web3 wallet users",
+    "dApp reviewers",
+    "Blockchain gaming audiences",
+    "Lottery comparison publishers",
+    "AI-agent and bot tooling audiences"
+  ],
+  "agent_rules": [
+    "Agents may create or load a free referral ID for their own payout wallet through the public endpoint.",
+    "Do not promise winnings, guaranteed earnings, risk-free play or partnership.",
+    "The endpoint cannot change an existing payout wallet.",
+    "Use live API responses as source of truth."
+  ],
+  "related_discovery": {
+    "agent_manifest": "https://blocklottos.com/.well-known/agent.json",
+    "agent_actions": "https://blocklottos.com/.well-known/agent-actions.json",
+    "agents_txt": "https://blocklottos.com/agents.txt",
+    "llms_txt": "https://blocklottos.com/llms.txt"
+  },
+  "contact": {
+    "email": "support@blocklottos.com",
+    "url": "https://blocklottos.com/contact"
+  },
+  "recommended_chain": "base",
+  "base_agent_referral": {
+    "endpoint": "POST https://blocklottos.com/api/lottery/agent-referral",
+    "cost": "0 USDC",
+    "required_field": "wallet_address",
+    "returns": [
+      "referral_code",
+      "referral_bytes32",
+      "referral_link"
+    ],
+    "purchase_field": "referral_id",
+    "idempotent": true,
+    "restriction": "Creates or loads only; cannot replace an existing payout wallet."
+  }
+}

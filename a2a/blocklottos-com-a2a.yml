@@ -1,0 +1,167 @@
+generated: '2026-09-19'
+method: probed
+source: https://blocklottos.com/.well-known/agent.json
+card:
+  file: a2a/blocklottos-com-agent-card.json
+discovery:
+  path: /.well-known/agent.json
+  canonical: false
+  host: blocklottos.com
+  note: 'Found ONLY at the pre-0.3 legacy path. The A2A 1.0.0 canonical /.well-known/agent-card.json returns a real
+    404 on blocklottos.com (HTML "Page not found"); www.blocklottos.com 301s both paths to the apex. Ownership is
+    not in question: the card is served from the same apex that serves the OpenAPI (servers[] https://blocklottos.com),
+    provider.organization is "Block Lottos" with provider.url https://blocklottos.com, contact support@blocklottos.com
+    matches info.contact in the OpenAPI, and the provider''s own llms.txt/agents.txt/robots.txt name this exact
+    URL as the "Agent manifest".'
+  harvest_lead: This provider entered the catalog from a2aregistry.org (415 agents fetched 2026-09-19), which lists
+    this URL as the agent card of the single agent "Block Lottos".
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://blocklottos.com/.well-known/agent.json
+  http_status: 200
+  content_type: application/json
+  body_bytes: 9487
+  body_parses_as: JSON object; carries name, url, version, capabilities (object), skills (array), defaultInputModes,
+    defaultOutputModes, provider - 6 of the 6 shape fields the probe accepts on, minus protocolVersion.
+  corroborating_probes:
+  - url: https://blocklottos.com/.well-known/agent-card.json
+    http_status: 404
+  - url: https://www.blocklottos.com/.well-known/agent.json
+    http_status: 301
+    note: -> https://blocklottos.com/.well-known/agent.json
+  - url: https://blocklottos.com/.well-known/ai-plugin.json
+    http_status: 200
+    note: Sibling ai-plugin manifest pointing at the same OpenAPI; saved in well-known/.
+  - url: https://blocklottos.com/.well-known/agent-actions.json
+    http_status: 200
+    note: Provider-defined action manifest the card links from entrypoints.agent_actions; saved in well-known/.
+agent_card:
+  name: Block Lottos
+  slug: block-lottos
+  version: 2026.09.09
+  url: https://blocklottos.com
+  description: Block Lottos is a transparent weekly probability challenge within a lottery. Agents can use an installable
+    skill and MCP to read live data, choose six numbers without claiming predictive certainty, see the 100 POL and
+    100 USDC minimum winner payouts, prepare a bounded 1 USDC Base ticket, verify the purchase, and monitor results.
+    The random draw is not a solvable equation.
+  provider:
+    name: Block Lottos
+    organization: Block Lottos
+    url: https://blocklottos.com
+  category: web3-gaming
+  protocols_declared:
+  - openapi
+  - llms.txt
+  - agents.txt
+  - agent-actions
+  - affiliate-program
+  - mcp
+  - agent-skill
+  capabilities:
+    streaming: false
+    pushNotifications: false
+    stateTransitionHistory: false
+  default_input_modes:
+  - text
+  default_output_modes:
+  - text
+  skill_count: 6
+  skills:
+  - id: block-lottos-probability-challenge
+    name: Block Lottos Probability Challenge
+    tags:
+    - probability
+    - agent-skill
+    - mcp
+    - base
+    - usdc
+  - id: get-base-agent-capabilities
+    name: Read live Base capabilities
+    tags:
+    - base
+    - agent
+    - lottery
+  - id: get-or-create-base-referral
+    name: Get or create a unified multi-chain referral
+    tags:
+    - base
+    - agent
+    - lottery
+  - id: prepare-base-ticket-purchase
+    name: Prepare a Base ticket purchase
+    tags:
+    - base
+    - agent
+    - lottery
+  - id: confirm-base-ticket-purchase
+    name: Confirm a Base ticket purchase
+    tags:
+    - base
+    - agent
+    - lottery
+  - id: check-base-tickets-and-results
+    name: Check Base tickets and results
+    tags:
+    - base
+    - agent
+    - lottery
+  contact:
+    email: support@blocklottos.com
+    url: https://blocklottos.com/contact
+  legal:
+    terms: https://blocklottos.com/terms
+    privacy: https://blocklottos.com/privacy
+conformance:
+  spec: A2A 1.0.0
+  grade: flavored
+  protocol_version: null
+  preferred_transport: null
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: false
+    skills_is_array: true
+  optional_fields:
+    default_input_modes: true
+    default_output_modes: true
+    preferred_transport: false
+  grade_basis: 'Graded against the A2A 1.0.0 hard checks. capabilities is an OBJECT (pass: streaming, pushNotifications,
+    stateTransitionHistory declared as fields). skills is an ARRAY (pass, six entries with id/name/description/tags).
+    protocolVersion is ABSENT (fail) - nowhere at the top level and there is no supportedInterfaces[]/additionalInterfaces[]
+    block that could carry it, so the card declares no A2A protocol version at all. One hard-check failure makes
+    the card "flavored" even though it carries both optional mode fields. The document reads as a hybrid: it uses
+    the A2A vocabulary (capabilities, skills, defaultInputModes, provider) but opens with schema_version "v1" and
+    a slug, and most of its bulk is provider-defined discovery (entrypoints, api_capabilities, chains, trust, protocols,
+    agent_instructions, live_draw_data, winner_payout_policy).'
+  deviations:
+  - field: protocolVersion
+    observed: absent
+    note: No A2A protocol version declared anywhere in the card.
+  - field: url
+    observed: https://blocklottos.com (the homepage)
+    note: A2A expects url to be the agent's A2A endpoint (JSON-RPC/gRPC/HTTP+JSON). This card's url is the website;
+      no A2A message endpoint exists. The real machine surfaces the card points at are REST (entrypoints.agent_capabilities
+      ...) and a stdio MCP package (entrypoints.mcp_launch) - the "hit is a lead for MCP" case, captured in mcp/.
+  - field: preferredTransport / supportedInterfaces / additionalInterfaces
+    observed: absent
+    note: No transport declared; consistent with there being no A2A endpoint to bind.
+  - field: schema_version
+    observed: '"v1"'
+    note: Not an A2A field; borrowed from the ai-plugin manifest vocabulary the same site publishes.
+  - field: skills[].skill_url / skills[].mcp_git
+    observed: present on skills[0]
+    note: Non-A2A fields pointing at the SKILL.md and the MCP Git source. Skills lack the optional examples/inputModes/outputModes;
+      five of six skills are descriptions of REST/MCP actions rather than A2A-invocable skills.
+  - field: version
+    observed: '"2026.09.09"'
+    note: Date-shaped rather than semver; harmless, recorded for readers that parse it.
+  - field: securitySchemes / security
+    observed: absent
+    note: Reads are key-less and writes are wallet-signature gated, which the card states in prose (trust.*) rather
+      than in a security scheme.
+surface_relationship:
+  note: 'The card is a discovery hub, not an A2A endpoint. It fans out to: the OpenAPI at /openapi.json (20 operations,
+    see openapi/), the stdio MCP server (uvx --from git+https://blocklottos.com/git/blocklottos-agent-tools.git
+    blocklottos-mcp, see mcp/), the provider-authored SKILL.md (see skills/), llms.txt + agents.txt (see llms/),
+    and the provider-defined agent-actions.json / affiliate-program.json manifests (see well-known/). An agent that
+    can only speak A2A cannot invoke anything here; an agent that can call REST or run a local MCP package can do
+    everything the card describes.'
