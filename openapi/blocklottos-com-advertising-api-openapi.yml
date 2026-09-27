@@ -1,0 +1,519 @@
+openapi: 3.2.0
+info:
+  title: Blocklottos Com Advertising API
+  version: 1.2.0
+  contact:
+    name: Block Lottos Support
+    email: support@blocklottos.com
+    url: https://blocklottos.com/contact
+  license:
+    name: Public
+    url: https://blocklottos.com/terms
+  description: 'Operations tagged Advertising across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://blocklottos.com
+  description: Production
+security: []
+tags:
+- name: Advertising
+  description: Display advertising API - submit, manage, and track ads on Block Lottos.
+paths:
+  /api/ads/sizes:
+    get:
+      operationId: getAdSizes
+      summary: Get available ad sizes and pricing
+      description: 'Returns all available banner sizes with dimensions, pricing for 7/14/30 day durations, submission fee, and any active discounts. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      responses:
+        '200':
+          description: Available ad sizes and pricing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sizes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 300x250
+                        width:
+                          type: integer
+                          example: 300
+                        height:
+                          type: integer
+                          example: 250
+                        label:
+                          type: string
+                        price_7d:
+                          type: number
+                          description: 7-day placement price in USDC
+                          example: 85
+                        price_14d:
+                          type: number
+                          description: 14-day placement price in USDC
+                          example: 140
+                        price_30d:
+                          type: number
+                          description: 30-day placement price in USDC
+                          example: 250
+                        discount_pct:
+                          type: number
+                          example: 0
+                        discount_expires:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                        discounted_price_7d:
+                          type: number
+                          description: Discounted 7-day price in USDC
+                        discounted_price_14d:
+                          type: number
+                          description: Discounted 14-day price in USDC
+                        discounted_price_30d:
+                          type: number
+                          description: Discounted 30-day price in USDC
+                  submit_fee:
+                    type: number
+                    description: Non-refundable submission quote fee in USDC
+                    example: 1
+                  currency:
+                    type: string
+                    example: USDC
+        '429':
+          description: Rate limit exceeded
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/submit:
+    post:
+      operationId: submitAd
+      summary: Submit an ad (quote-first flow, step 1)
+      description: 'Submit ad details and an image to get a payment quote. Returns a quote_id and an unsigned USDC transfer transaction. The caller signs and broadcasts the transaction from their Web3 wallet, then calls POST /api/ads/submit/pay to finalise. Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - image
+              - size_id
+              - target_url
+              - wallet_address
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Banner image file. Dimensions must exactly match size_id.
+                size_id:
+                  type: string
+                  description: Ad size ID from /api/ads/sizes
+                  example: 300x250
+                target_url:
+                  type: string
+                  format: uri
+                  description: URL the ad should link to
+                  example: https://example.com
+                wallet_address:
+                  type: string
+                  description: EVM wallet address that will make payment
+                  example: '0x000000000000000000000000000000000000dEaD'
+                network:
+                  type: string
+                  description: USDC payment network
+                  enum:
+                  - polygon
+                  - base
+                  - avalanche
+                  - ethereum
+                  - arbitrum
+                  - optimism
+                  - bnb
+                  default: polygon
+      responses:
+        '200':
+          description: Quote generated - sign and broadcast the transaction, then call /api/ads/submit/pay
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote_id:
+                    type: string
+                    description: Use this in the /api/ads/submit/pay call
+                    example: sq_abc123
+                  status:
+                    type: string
+                    example: awaiting_payment
+                  expires_at:
+                    type: string
+                    format: date-time
+                  payment:
+                    type: object
+                    description: Unsigned USDC transfer transaction and payment metadata
+                  next_step:
+                    type: string
+        '400':
+          description: Invalid input
+        '429':
+          description: Rate limit exceeded
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/submit/pay:
+    post:
+      operationId: confirmAdSubmitPayment
+      summary: Confirm ad payment (quote-first flow, step 2)
+      description: After broadcasting the USDC payment transaction, call this endpoint with quote_id and transaction hash to finalise the submission. The system verifies the transaction on-chain. Accepts application/json or form-encoded bodies.
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  description: Quote ID from POST /api/ads/submit
+                  example: q_123456
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  description: Quote ID from POST /api/ads/submit
+                  example: q_123456
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+      responses:
+        '200':
+          description: Submission confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  submission_id:
+                    type: string
+                    description: Use this to check status
+                    example: ad_42
+                  status:
+                    type: string
+                    example: pending_review
+                  message:
+                    type: string
+                    example: Ad submitted successfully and is pending review.
+        '400':
+          description: Invalid quote_id or tx_hash
+        '402':
+          description: Payment not verified on-chain
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/status/{submission_id}:
+    get:
+      operationId: getAdStatus
+      summary: Check ad submission status
+      description: 'Returns the current status of a submitted ad. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      parameters:
+      - name: submission_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Submission ID returned by /api/ads/submit/pay (e.g. ad_42)
+        example: ad_42
+      responses:
+        '200':
+          description: Ad status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  submission_id:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - pending_review
+                    - approved
+                    - rejected
+                    - active
+                    - expired
+                    description: Current status of the ad
+                  banner_size:
+                    type: string
+                  target_url:
+                    type: string
+                  submitted_at:
+                    type: string
+                    format: date-time
+                  reviewed_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                  expires_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+        '404':
+          description: Submission not found
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/wallet/{wallet_address}:
+    get:
+      operationId: getAdsByWallet
+      summary: Get all ads for a wallet
+      description: 'Returns all ad submissions associated with an EVM wallet address. Useful for bots to discover their submission IDs and track statuses. Rate limit: 2 requests/min/IP.'
+      tags:
+      - Advertising
+      parameters:
+      - name: wallet_address
+        in: path
+        required: true
+        schema:
+          type: string
+        description: EVM wallet address (0x...)
+        example: 0xYourWalletAddress
+      responses:
+        '200':
+          description: List of ads for this wallet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wallet:
+                    type: string
+                  ads:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        submission_id:
+                          type: string
+                        status:
+                          type: string
+                        banner_size:
+                          type: string
+                        target_url:
+                          type: string
+                        submitted_at:
+                          type: string
+                          format: date-time
+                        expires_at:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+        '400':
+          description: Invalid wallet address
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/activate:
+    post:
+      operationId: requestAdActivationQuote
+      summary: Request an ad activation quote
+      description: 'Request an activation quote for an approved ad. Returns current duration pricing and an unsigned USDC transfer transaction. Accepts application/json or form-encoded bodies. Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - submission_id
+              - duration
+              - wallet_address
+              properties:
+                submission_id:
+                  type: string
+                  example: ad_42
+                duration:
+                  type: string
+                  enum:
+                  - 7d
+                  - 14d
+                  - 30d
+                wallet_address:
+                  type: string
+                  description: EVM wallet address that will make payment
+                  example: '0x000000000000000000000000000000000000dEaD'
+                network:
+                  type: string
+                  enum:
+                  - polygon
+                  - base
+                  - avalanche
+                  - ethereum
+                  - arbitrum
+                  - optimism
+                  - bnb
+                  default: polygon
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - submission_id
+              - duration
+              - wallet_address
+              properties:
+                submission_id:
+                  type: string
+                duration:
+                  type: string
+                wallet_address:
+                  type: string
+                network:
+                  type: string
+      responses:
+        '200':
+          description: Activation quote generated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid input
+        '404':
+          description: Submission not found
+        '409':
+          description: Ad is not approved
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/ads/activate/pay:
+    post:
+      operationId: confirmAdActivationPayment
+      summary: Confirm ad activation payment
+      description: 'After broadcasting the USDC activation payment transaction, call this endpoint with quote_id and transaction hash. The system verifies payment on-chain before activating the ad. Accepts application/json or form-encoded bodies. Rate limit: 10 requests/min/IP.'
+      tags:
+      - Advertising
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  example: aq_xyz789
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - quote_id
+              - tx_hash
+              properties:
+                quote_id:
+                  type: string
+                  example: aq_xyz789
+                tx_hash:
+                  type: string
+                  description: Transaction hash of your USDC payment on the selected network
+                  example: 0xabc123...
+      responses:
+        '200':
+          description: Ad activated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid quote_id or tx_hash
+        '402':
+          description: Payment not verified on-chain
+        '404':
+          description: Quote or ad not found
+        '409':
+          description: Quote already used or ad state changed
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+externalDocs:
+  description: Full API documentation
+  url: https://blocklottos.com/api-docs
+x-refined-from:
+- blocklottos-com-openapi.json
+- blocklottos-com-openapi.yml
+x-blocklottos-active-contracts:
+  polygon:
+    name: Polygon Fortune Ledger
+    chain_id: 137
+    contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+    ticket_price: 10 POL
+    ticket_token: native POL
+    draw_time_utc: Saturday 15:00
+  base:
+    name: Base Future Ledger
+    chain_id: 8453
+    contract: '0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a'
+    ticket_price: 1 USDC
+    ticket_token: official Base USDC
+    ticket_token_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+    draw_time_utc: Saturday 16:00
+x-block-lottos-agent-default:
+  chain: base
+  game: Base Future Ledger
+  chain_id: 8453
+  ticket_currency: USDC
+  ticket_price: 1 USDC
+  payment_token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  gas_currency: ETH
+  gas_note: ETH is required only for Base network gas.
+  capabilities_url: https://blocklottos.com/api/lottery/agent-capabilities
+  non_custodial: true
+  minimum_winner_payout: 100 USDC
+  higher_live_jackpot_applies: true
+x-blocklottos-winner-payout-policy:
+  polygon:
+    minimum: 100
+    currency: POL
+    higher_live_jackpot_applies: true
+  base:
+    minimum: 100
+    currency: USDC
+    higher_live_jackpot_applies: true
+  outcome_note: These minimums apply only after a ticket is verified as a winner. They do not guarantee that any ticket will win.

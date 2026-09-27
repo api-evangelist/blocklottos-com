@@ -1,0 +1,146 @@
+openapi: 3.2.0
+info:
+  title: Blocklottos Com Affiliate API
+  version: 1.2.0
+  contact:
+    name: Block Lottos Support
+    email: support@blocklottos.com
+    url: https://blocklottos.com/contact
+  license:
+    name: Public
+    url: https://blocklottos.com/terms
+  description: 'Operations tagged Affiliate across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://blocklottos.com
+  description: Production
+security: []
+tags:
+- name: Affiliate
+paths:
+  /api/lottery/agent-referral:
+    post:
+      operationId: getOrCreateUnifiedAffiliateProfile
+      summary: Create or load one shared multi-chain affiliate profile
+      description: 'One shared affiliate profile for humans, bots, agents, and LLMs. Secure enrollment is two-step: request action=challenge, sign the returned message with the EVM identity wallet, then resubmit challenge_id and signature. Solana and Cardano are supported as payout wallets. The one-time management token authorizes payout-wallet updates and private balances.'
+      tags:
+      - Affiliate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                  description: Backward-compatible EVM identity wallet.
+                primary_chain:
+                  type: string
+                  enum:
+                  - evm
+                  default: evm
+                  description: EVM identity chain used for ownership proof. Solana and Cardano remain available as payout wallets after secure enrollment.
+                connected_wallet:
+                  type: string
+                  maxLength: 180
+                  description: Identity wallet on primary_chain. Defaults to wallet_address.
+                evm_wallet:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                solana_wallet:
+                  type: string
+                  pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
+                cardano_wallet:
+                  type: string
+                  pattern: ^(addr1|stake1)[0-9a-zA-Z]+$
+                agent_id:
+                  type: string
+                  maxLength: 80
+                action:
+                  type: string
+                  enum:
+                  - challenge
+                  - manage
+                  default: manage
+                  description: Use challenge first to obtain the exact message the identity wallet must sign.
+                challenge_id:
+                  type: string
+                  pattern: ^[0-9a-f]{48}$
+                signature:
+                  type: string
+                  description: EVM personal_sign 65-byte hex signature or Solana Ed25519 64-byte hex signature over the exact challenge message.
+              anyOf:
+              - required:
+                - wallet_address
+              - required:
+                - primary_chain
+                - connected_wallet
+      responses:
+        '200':
+          description: Public referral identity, plus a newly issued or rotated one-time management token and private profile data after successful ownership proof; subsequent private data requires Bearer authorization
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid or unsafe request
+        '503':
+          description: Affiliate service unavailable
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          pattern: ^Bearer blm_[0-9a-f]{64}$
+        description: Required for payout-wallet changes and private monitoring. Use the one-time management token returned only when a new profile is created.
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+externalDocs:
+  description: Full API documentation
+  url: https://blocklottos.com/api-docs
+x-refined-from:
+- blocklottos-com-openapi.json
+- blocklottos-com-openapi.yml
+x-blocklottos-active-contracts:
+  polygon:
+    name: Polygon Fortune Ledger
+    chain_id: 137
+    contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+    ticket_price: 10 POL
+    ticket_token: native POL
+    draw_time_utc: Saturday 15:00
+  base:
+    name: Base Future Ledger
+    chain_id: 8453
+    contract: '0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a'
+    ticket_price: 1 USDC
+    ticket_token: official Base USDC
+    ticket_token_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+    draw_time_utc: Saturday 16:00
+x-block-lottos-agent-default:
+  chain: base
+  game: Base Future Ledger
+  chain_id: 8453
+  ticket_currency: USDC
+  ticket_price: 1 USDC
+  payment_token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  gas_currency: ETH
+  gas_note: ETH is required only for Base network gas.
+  capabilities_url: https://blocklottos.com/api/lottery/agent-capabilities
+  non_custodial: true
+  minimum_winner_payout: 100 USDC
+  higher_live_jackpot_applies: true
+x-blocklottos-winner-payout-policy:
+  polygon:
+    minimum: 100
+    currency: POL
+    higher_live_jackpot_applies: true
+  base:
+    minimum: 100
+    currency: USDC
+    higher_live_jackpot_applies: true
+  outcome_note: These minimums apply only after a ticket is verified as a winner. They do not guarantee that any ticket will win.

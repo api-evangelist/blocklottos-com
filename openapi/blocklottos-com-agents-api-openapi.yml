@@ -1,0 +1,323 @@
+openapi: 3.2.0
+info:
+  title: Blocklottos Com Agents API
+  version: 1.2.0
+  contact:
+    name: Block Lottos Support
+    email: support@blocklottos.com
+    url: https://blocklottos.com/contact
+  license:
+    name: Public
+    url: https://blocklottos.com/terms
+  description: 'Operations tagged Agents across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://blocklottos.com
+  description: Production
+security: []
+tags:
+- name: Agents
+paths:
+  /api/lottery/agent-capabilities:
+    get:
+      operationId: getBaseAgentCapabilities
+      summary: Get live Base-first agent capabilities
+      description: Returns authoritative Base USDC payment details, on-chain jackpot, 100 USDC minimum winner payout, payable winner amount, complete purchase workflow, referral route, and owner-defined safety policy.
+      tags:
+      - Agents
+      responses:
+        '200':
+          description: Live Base agent capability document
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  game:
+                    type: object
+                    properties:
+                      onchain_jackpot:
+                        type: number
+                        description: Amount currently reported by the selected lottery smart contract.
+                      minimum_winner_payout:
+                        type: number
+                        description: Published minimum paid for a valid winning ticket. Currently 100 in the selected game currency.
+                        example: 100
+                      winner_payout:
+                        type: number
+                        description: 'Payable amount for a valid winning ticket: the higher of onchain_jackpot and minimum_winner_payout.'
+                        example: 100
+                      winner_payout_policy:
+                        type: object
+                        properties:
+                          currency:
+                            type: string
+                            example: USDC
+                          minimum:
+                            type: number
+                            example: 100
+                          higher_live_jackpot_applies:
+                            type: boolean
+                            example: true
+                          summary:
+                            type: string
+                  workflow:
+                    type: array
+                    items:
+                      type: object
+                  safety:
+                    type: array
+                    items:
+                      type: string
+                additionalProperties: true
+        '429':
+          description: Rate limit exceeded
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/lottery/agent-referral:
+    post:
+      operationId: getOrCreateUnifiedAffiliateProfile
+      summary: Create or load one shared multi-chain affiliate profile
+      description: 'One shared affiliate profile for humans, bots, agents, and LLMs. Secure enrollment is two-step: request action=challenge, sign the returned message with the EVM identity wallet, then resubmit challenge_id and signature. Solana and Cardano are supported as payout wallets. The one-time management token authorizes payout-wallet updates and private balances.'
+      tags:
+      - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                  description: Backward-compatible EVM identity wallet.
+                primary_chain:
+                  type: string
+                  enum:
+                  - evm
+                  default: evm
+                  description: EVM identity chain used for ownership proof. Solana and Cardano remain available as payout wallets after secure enrollment.
+                connected_wallet:
+                  type: string
+                  maxLength: 180
+                  description: Identity wallet on primary_chain. Defaults to wallet_address.
+                evm_wallet:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                solana_wallet:
+                  type: string
+                  pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
+                cardano_wallet:
+                  type: string
+                  pattern: ^(addr1|stake1)[0-9a-zA-Z]+$
+                agent_id:
+                  type: string
+                  maxLength: 80
+                action:
+                  type: string
+                  enum:
+                  - challenge
+                  - manage
+                  default: manage
+                  description: Use challenge first to obtain the exact message the identity wallet must sign.
+                challenge_id:
+                  type: string
+                  pattern: ^[0-9a-f]{48}$
+                signature:
+                  type: string
+                  description: EVM personal_sign 65-byte hex signature or Solana Ed25519 64-byte hex signature over the exact challenge message.
+              anyOf:
+              - required:
+                - wallet_address
+              - required:
+                - primary_chain
+                - connected_wallet
+      responses:
+        '200':
+          description: Public referral identity, plus a newly issued or rotated one-time management token and private profile data after successful ownership proof; subsequent private data requires Bearer authorization
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid or unsafe request
+        '503':
+          description: Affiliate service unavailable
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          pattern: ^Bearer blm_[0-9a-f]{64}$
+        description: Required for payout-wallet changes and private monitoring. Use the one-time management token returned only when a new profile is created.
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/lottery/agent-purchase:
+    post:
+      operationId: prepareBaseAgentPurchase
+      summary: Prepare one bounded Base USDC ticket purchase
+      description: Base-only non-custodial endpoint. Each call prepares exactly one ticket to prevent accidental batching; agents may make multiple purchase calls for as many tickets as the wallet owner permits. Reads the live contract ticket price, checks the wallet’s USDC balance and allowance where RPC permits, returns an exact one-ticket approval transaction plus the unsigned ticket transaction, and never receives private keys, signs, or broadcasts.
+      tags:
+      - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - wallet_address
+              - numbers
+              - max_price_usdc
+              - idempotency_key
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                numbers:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 1
+                    maximum: 49
+                  minItems: 6
+                  maxItems: 6
+                  uniqueItems: true
+                max_price_usdc:
+                  type: string
+                  example: '1.00'
+                  description: Fail-closed maximum. The endpoint currently prepares one 1 USDC ticket.
+                referral_id:
+                  type: string
+                  maxLength: 66
+                  description: Optional code returned by agent-referral or 0x bytes32.
+                idempotency_key:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  pattern: ^[A-Za-z0-9._:-]+$
+                  description: Required correlation key. It does not prevent duplicate wallet broadcasts; submit each returned transaction at most once.
+                valid_until:
+                  type: string
+                  format: date-time
+                  description: Optional preparation expiry with an explicit timezone, no more than 7 days ahead. The wallet must recheck it before broadcasting because the contract call has no deadline parameter.
+                agent_id:
+                  type: string
+                  maxLength: 80
+      responses:
+        '200':
+          description: Exact unsigned Base transactions and execution steps
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Invalid or unsafe request
+        '409':
+          description: Price cap exceeded or intent expired
+        '503':
+          description: RPC unavailable
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+  /api/lottery/confirm-ticket-tx:
+    post:
+      operationId: confirmBaseTicketPurchase
+      summary: Verify a Base ticket purchase on chain
+      description: Checks receipt success, sender, active contract, purchase selector and TicketPurchased event before recording private agent attribution.
+      tags:
+      - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tx_hash
+              - wallet_address
+              properties:
+                tx_hash:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{64}$
+                wallet_address:
+                  type: string
+                  pattern: ^0x[0-9a-fA-F]{40}$
+                execution_id:
+                  type: string
+                  maxLength: 80
+                agent_id:
+                  type: string
+                  maxLength: 80
+      responses:
+        '200':
+          description: Verified TicketPurchased event and decoded numbers
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '202':
+          description: Transaction still pending
+        '400':
+          description: Invalid or unsafe request
+        '409':
+          description: Failed or mismatched transaction
+        '503':
+          description: RPC or private attribution log unavailable
+    servers:
+    - url: https://blocklottos.com
+      description: Production
+externalDocs:
+  description: Full API documentation
+  url: https://blocklottos.com/api-docs
+x-refined-from:
+- blocklottos-com-openapi.json
+- blocklottos-com-openapi.yml
+x-blocklottos-active-contracts:
+  polygon:
+    name: Polygon Fortune Ledger
+    chain_id: 137
+    contract: '0x07F62Ff6697eD9b475FEed9dc90a5A157936839c'
+    ticket_price: 10 POL
+    ticket_token: native POL
+    draw_time_utc: Saturday 15:00
+  base:
+    name: Base Future Ledger
+    chain_id: 8453
+    contract: '0xe5a9cF597ec65523BD71a8433B620eB1F3Eb0d0a'
+    ticket_price: 1 USDC
+    ticket_token: official Base USDC
+    ticket_token_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+    draw_time_utc: Saturday 16:00
+x-block-lottos-agent-default:
+  chain: base
+  game: Base Future Ledger
+  chain_id: 8453
+  ticket_currency: USDC
+  ticket_price: 1 USDC
+  payment_token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  gas_currency: ETH
+  gas_note: ETH is required only for Base network gas.
+  capabilities_url: https://blocklottos.com/api/lottery/agent-capabilities
+  non_custodial: true
+  minimum_winner_payout: 100 USDC
+  higher_live_jackpot_applies: true
+x-blocklottos-winner-payout-policy:
+  polygon:
+    minimum: 100
+    currency: POL
+    higher_live_jackpot_applies: true
+  base:
+    minimum: 100
+    currency: USDC
+    higher_live_jackpot_applies: true
+  outcome_note: These minimums apply only after a ticket is verified as a winner. They do not guarantee that any ticket will win.

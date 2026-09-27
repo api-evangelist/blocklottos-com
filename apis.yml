@@ -31,32 +31,17 @@ tags:
 - Polygon
 - USDC
 - Smart Contracts
+- A2A
 apis:
-- aid: blocklottos-com:block-lottos-api
-  name: Block Lottos API
-  description: Public Block Lottos API (OpenAPI 3.1.0, v1.2.0, 20 operations, no API key) covering lottery reads
-    for Polygon Fortune Ledger and Base Future Ledger (jackpot, stats, draw history, draw proof, wallet tickets,
-    prize checks), unsigned ticket-transaction building, the Base-first agent flow (agent-capabilities, agent-referral,
-    agent-purchase, confirm-ticket-tx) and a quote-first USDC banner advertising API (sizes, submit, submit/pay,
-    status, wallet lookup, activate, activate/pay). All responses are JSON; rate limits are per IP with a Retry-After
-    header on 429.
-  image: https://blocklottos.com/images/logo21.png
+- aid: blocklottos-com:blocklottos-com-advertising-api
+  name: Block Lottos Advertising API
+  description: Display advertising API - submit, manage, and track ads on Block Lottos.
   humanURL: https://blocklottos.com/api-docs
-  baseURL: https://blocklottos.com
   tags:
-  - Lottery
   - Advertising
-  - AI Agents
-  - Affiliate Marketing
-  - Blockchain
-  - Base
-  - Polygon
   properties:
   - type: OpenAPI
-    url: openapi/blocklottos-com-openapi.yml
-  - type: OpenAPI
-    name: Provider-hosted OpenAPI (verbatim source, mirrored at openapi/_original/)
-    url: https://blocklottos.com/openapi.json
+    url: openapi/blocklottos-com-advertising-api-openapi.yml
   - type: Documentation
     url: https://blocklottos.com/api-docs
   - type: APIReference
@@ -67,8 +52,81 @@ apis:
     url: rate-limits/blocklottos-com-rate-limits.yml
   - type: ErrorCatalog
     url: errors/blocklottos-com-problem-types.yml
-  - type: Overlay
-    url: overlays/blocklottos-com-openapi-overlay.yaml
+  - type: DataModel
+    url: data-model/blocklottos-com-data-model.yml
+  - type: Examples
+    url: examples/blocklottos-com-examples.yml
+  - type: ToolCrosswalk
+    url: mcp/blocklottos-com-tool-crosswalk.yml
+- aid: blocklottos-com:blocklottos-com-affiliate-api
+  name: Block Lottos Affiliate API
+  description: The Affiliate API from Block Lottos — 1 operation(s) for affiliate.
+  humanURL: https://blocklottos.com/api-docs
+  tags:
+  - Affiliate
+  properties:
+  - type: OpenAPI
+    url: openapi/blocklottos-com-affiliate-api-openapi.yml
+  - type: Documentation
+    url: https://blocklottos.com/api-docs
+  - type: APIReference
+    url: https://blocklottos.com/api-docs
+  - type: GettingStarted
+    url: https://blocklottos.com/api-docs#ads-quickstart
+  - type: RateLimits
+    url: rate-limits/blocklottos-com-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/blocklottos-com-problem-types.yml
+  - type: DataModel
+    url: data-model/blocklottos-com-data-model.yml
+  - type: Examples
+    url: examples/blocklottos-com-examples.yml
+  - type: ToolCrosswalk
+    url: mcp/blocklottos-com-tool-crosswalk.yml
+- aid: blocklottos-com:blocklottos-com-agents-api
+  name: Block Lottos Agents API
+  description: The Agents API from Block Lottos — 4 operation(s) for agents.
+  humanURL: https://blocklottos.com/api-docs
+  tags:
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/blocklottos-com-agents-api-openapi.yml
+  - type: Documentation
+    url: https://blocklottos.com/api-docs
+  - type: APIReference
+    url: https://blocklottos.com/api-docs
+  - type: GettingStarted
+    url: https://blocklottos.com/api-docs#ads-quickstart
+  - type: RateLimits
+    url: rate-limits/blocklottos-com-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/blocklottos-com-problem-types.yml
+  - type: DataModel
+    url: data-model/blocklottos-com-data-model.yml
+  - type: Examples
+    url: examples/blocklottos-com-examples.yml
+  - type: ToolCrosswalk
+    url: mcp/blocklottos-com-tool-crosswalk.yml
+- aid: blocklottos-com:blocklottos-com-lottery-api
+  name: Block Lottos Lottery API
+  description: Lottery data and transaction builders for Polygon Fortune Ledger and Base Future Ledger
+  humanURL: https://blocklottos.com/api-docs
+  tags:
+  - Lottery
+  properties:
+  - type: OpenAPI
+    url: openapi/blocklottos-com-lottery-api-openapi.yml
+  - type: Documentation
+    url: https://blocklottos.com/api-docs
+  - type: APIReference
+    url: https://blocklottos.com/api-docs
+  - type: GettingStarted
+    url: https://blocklottos.com/api-docs#ads-quickstart
+  - type: RateLimits
+    url: rate-limits/blocklottos-com-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/blocklottos-com-problem-types.yml
   - type: DataModel
     url: data-model/blocklottos-com-data-model.yml
   - type: Examples
@@ -81,6 +139,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/blocklottos-com-openapi-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/blocklottos-com-agentic-access.yml
 - type: Website
