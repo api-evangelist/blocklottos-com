@@ -1,6 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Blocklottos Com Advertising API
+  title: Block Lottos Advertising API
+  description: Public Block Lottos API for Polygon and Base lottery data, advertising, affiliates, and a Base-first non-custodial agent purchase flow. A verified winning Polygon ticket receives at least 100 POL and a verified winning Base ticket receives at least 100 USDC; a higher current jackpot applies when it exceeds the minimum.
   version: 1.2.0
   contact:
     name: Block Lottos Support
@@ -9,7 +10,6 @@ info:
   license:
     name: Public
     url: https://blocklottos.com/terms
-  description: 'Operations tagged Advertising across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://blocklottos.com
   description: Production
@@ -87,9 +87,6 @@ paths:
                     example: USDC
         '429':
           description: Rate limit exceeded
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/submit:
     post:
       operationId: submitAd
@@ -165,9 +162,6 @@ paths:
           description: Invalid input
         '429':
           description: Rate limit exceeded
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/submit/pay:
     post:
       operationId: confirmAdSubmitPayment
@@ -230,9 +224,6 @@ paths:
           description: Invalid quote_id or tx_hash
         '402':
           description: Payment not verified on-chain
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/status/{submission_id}:
     get:
       operationId: getAdStatus
@@ -286,9 +277,6 @@ paths:
                     format: date-time
         '404':
           description: Submission not found
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/wallet/{wallet_address}:
     get:
       operationId: getAdsByWallet
@@ -337,9 +325,6 @@ paths:
                           format: date-time
         '400':
           description: Invalid wallet address
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/activate:
     post:
       operationId: requestAdActivationQuote
@@ -412,9 +397,6 @@ paths:
           description: Submission not found
         '409':
           description: Ad is not approved
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/ads/activate/pay:
     post:
       operationId: confirmAdActivationPayment
@@ -469,15 +451,9 @@ paths:
           description: Quote or ad not found
         '409':
           description: Quote already used or ad state changed
-    servers:
-    - url: https://blocklottos.com
-      description: Production
 externalDocs:
   description: Full API documentation
   url: https://blocklottos.com/api-docs
-x-refined-from:
-- blocklottos-com-openapi.json
-- blocklottos-com-openapi.yml
 x-blocklottos-active-contracts:
   polygon:
     name: Polygon Fortune Ledger

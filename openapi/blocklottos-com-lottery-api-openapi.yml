@@ -1,6 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Blocklottos Com Lottery API
+  title: Block Lottos Lottery API
+  description: Public Block Lottos API for Polygon and Base lottery data, advertising, affiliates, and a Base-first non-custodial agent purchase flow. A verified winning Polygon ticket receives at least 100 POL and a verified winning Base ticket receives at least 100 USDC; a higher current jackpot applies when it exceeds the minimum.
   version: 1.2.0
   contact:
     name: Block Lottos Support
@@ -9,7 +10,6 @@ info:
   license:
     name: Public
     url: https://blocklottos.com/terms
-  description: 'Operations tagged Lottery across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://blocklottos.com
   description: Production
@@ -111,9 +111,6 @@ paths:
           - base
           default: polygon
         description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/stats.php:
     get:
       operationId: getStats
@@ -207,9 +204,6 @@ paths:
           - base
           default: polygon
         description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/build-ticket-tx:
     post:
       operationId: buildLotteryTicketTx
@@ -294,9 +288,6 @@ paths:
                     example: Unsupported chain. Use polygon or base.
         '503':
           description: RPC unavailable
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/tickets/{wallet}:
     get:
       operationId: getLotteryTickets
@@ -343,9 +334,6 @@ paths:
                     example: Unsupported chain. Use polygon or base.
         '503':
           description: RPC unavailable
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/draw-history:
     get:
       operationId: getLotteryDrawHistory
@@ -403,9 +391,6 @@ paths:
       externalDocs:
         description: Public result JSON files
         url: https://blocklottos.com/data/draws/latest.json
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/draw-proof:
     get:
       operationId: getLotteryDrawProof
@@ -456,9 +441,6 @@ paths:
       externalDocs:
         description: Human-readable proof page
         url: https://blocklottos.com/draw-proof
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/check-prizes/{wallet}:
     get:
       operationId: checkLotteryPrizes
@@ -505,9 +487,6 @@ paths:
                     example: Unsupported chain. Use polygon or base.
         '503':
           description: RPC unavailable
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/jackpot:
     get:
       operationId: getLotteryJackpotAlias
@@ -601,9 +580,6 @@ paths:
           - base
           default: polygon
         description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/stats:
     get:
       operationId: getLotteryStatsAlias
@@ -697,9 +673,6 @@ paths:
           - base
           default: polygon
         description: Lottery chain to query. Use polygon for Polygon Fortune Ledger or base for Base Future Ledger.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/agent-capabilities:
     get:
       operationId: getBaseAgentCapabilities
@@ -757,9 +730,6 @@ paths:
                 additionalProperties: true
         '429':
           description: Rate limit exceeded
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/agent-referral:
     post:
       operationId: getOrCreateUnifiedAffiliateProfile
@@ -839,9 +809,6 @@ paths:
           type: string
           pattern: ^Bearer blm_[0-9a-f]{64}$
         description: Required for payout-wallet changes and private monitoring. Use the one-time management token returned only when a new profile is created.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/agent-purchase:
     post:
       operationId: prepareBaseAgentPurchase
@@ -908,9 +875,6 @@ paths:
           description: Price cap exceeded or intent expired
         '503':
           description: RPC unavailable
-    servers:
-    - url: https://blocklottos.com
-      description: Production
   /api/lottery/confirm-ticket-tx:
     post:
       operationId: confirmBaseTicketPurchase
@@ -956,15 +920,9 @@ paths:
           description: Failed or mismatched transaction
         '503':
           description: RPC or private attribution log unavailable
-    servers:
-    - url: https://blocklottos.com
-      description: Production
 externalDocs:
   description: Full API documentation
   url: https://blocklottos.com/api-docs
-x-refined-from:
-- blocklottos-com-openapi.json
-- blocklottos-com-openapi.yml
 x-blocklottos-active-contracts:
   polygon:
     name: Polygon Fortune Ledger

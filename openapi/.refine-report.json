@@ -1,8 +1,7 @@
 {
   "provider": "blocklottos-com",
   "sources": [
-    "_original/blocklottos-com-openapi.json",
-    "blocklottos-com-openapi.yml"
+    "_original/blocklottos-com-openapi.json"
   ],
   "outputs": [
     "blocklottos-com-advertising-api-openapi.yml",
@@ -10,24 +9,22 @@
     "blocklottos-com-agents-api-openapi.yml",
     "blocklottos-com-lottery-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/blocklottos-com-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "blocklottos-com-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "blocklottos-com-openapi.json: declared missing tag: Affiliate",
     "blocklottos-com-openapi.json: declared missing tag: Agents",
-    "blocklottos-com-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "blocklottos-com-openapi.yml: declared missing tag: Affiliate",
-    "blocklottos-com-openapi.yml: declared missing tag: Agents",
-    "tag 'Advertising' spans 2 source specs (blocklottos-com-openapi.json, blocklottos-com-openapi.yml): per-path servers applied",
-    "tag 'Affiliate' spans 2 source specs (blocklottos-com-openapi.json, blocklottos-com-openapi.yml): per-path servers applied",
-    "tag 'Agents' spans 2 source specs (blocklottos-com-openapi.json, blocklottos-com-openapi.yml): per-path servers applied",
-    "tag 'Lottery' spans 2 source specs (blocklottos-com-openapi.json, blocklottos-com-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+4 apis, 4 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/blocklottos-com-openapi.yml: archived document superseded by a larger archived document",
+    "blocklottos-com-advertising-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "blocklottos-com-affiliate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "blocklottos-com-agents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "blocklottos-com-lottery-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

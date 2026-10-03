@@ -1,6 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Blocklottos Com Affiliate API
+  title: Block Lottos Affiliate API
+  description: Public Block Lottos API for Polygon and Base lottery data, advertising, affiliates, and a Base-first non-custodial agent purchase flow. A verified winning Polygon ticket receives at least 100 POL and a verified winning Base ticket receives at least 100 USDC; a higher current jackpot applies when it exceeds the minimum.
   version: 1.2.0
   contact:
     name: Block Lottos Support
@@ -9,7 +10,6 @@ info:
   license:
     name: Public
     url: https://blocklottos.com/terms
-  description: 'Operations tagged Affiliate across 2 of this provider''s published API definitions: blocklottos-com-openapi.json, blocklottos-com-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://blocklottos.com
   description: Production
@@ -96,15 +96,9 @@ paths:
           type: string
           pattern: ^Bearer blm_[0-9a-f]{64}$
         description: Required for payout-wallet changes and private monitoring. Use the one-time management token returned only when a new profile is created.
-    servers:
-    - url: https://blocklottos.com
-      description: Production
 externalDocs:
   description: Full API documentation
   url: https://blocklottos.com/api-docs
-x-refined-from:
-- blocklottos-com-openapi.json
-- blocklottos-com-openapi.yml
 x-blocklottos-active-contracts:
   polygon:
     name: Polygon Fortune Ledger
