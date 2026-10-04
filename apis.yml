@@ -63,6 +63,8 @@ apis:
   description: The Affiliate API from Block Lottos — 1 operation(s) for affiliate.
   humanURL: https://blocklottos.com/api-docs
   tags:
+  - Affiliates
+  tags_raw:
   - Affiliate
   properties:
   - type: OpenAPI
