@@ -237,3 +237,45 @@ plans:
     currencies:
     - POL
     - USDC
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  - revenue-share
+  units:
+  - object
+  - request
+  plans:
+  - name: Public API access
+    access: free
+    model: metered
+    model_how: derived
+    units:
+    - request
+    periods:
+    - minute
+  - name: Lottery tickets
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - other
+    periods:
+    - per-use
+  - name: Banner advertising
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - object
+    - other
+    periods:
+    - per-use
+  - name: Affiliate programme
+    access: partner
+    model: revenue-share
+    model_how: stated
+    units:
+    - other
+    periods: []
