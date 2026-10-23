@@ -306,3 +306,9 @@ x-blocklottos-winner-payout-policy:
     currency: USDC
     higher_live_jackpot_applies: true
   outcome_note: These minimums apply only after a ticket is verified as a winner. They do not guarantee that any ticket will win.
+x-provenance:
+  method: harvested
+  publisher: Block Lottos
+  source: https://blocklottos.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
