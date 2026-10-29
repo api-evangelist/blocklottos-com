@@ -64,5 +64,127 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Block Lottos is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
-- https://blocklottos.com/
+Block Lottos is a blockchain lottery platform (Polygon Fortune Ledger, paid in POL, and Base Future Ledger, paid in USDC on Base) that publishes a public, key-free REST API for live jackpots, draw history, wallet tickets, prize status and commit-reveal draw proofs, an unsigned-transaction builder for tickets and banner-ad placements, and a Base-first agent purchase flow (capabilities, free referral enrollment, one-ticket preparation with a price cap and idempotency key, on-chain confirmation). It ships an OpenAPI 3.1 document, llms.txt and agents.txt, an ai-plugin manifest, an agent card at /.well-known/agent.json, a provider-authored SKILL.md and an open-source stdio MCP server on PyPI (blocklottos-mcp). The server never holds keys, signs or broadcasts; every purchase is non-custodial.
+
+**Areas:** Company · Lottery · Blockchain · Web3 · Gaming · Cryptocurrency · Advertising · Affiliate Marketing · AI Agents · Base · Polygon · USDC
+
+## Block Lottos on APIs.io
+
+Everything profiled for Block Lottos is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/blocklottos-com/](https://apis.io/providers/blocklottos-com/)** — or go straight to one of the APIs or properties below.
+
+### APIs (4)
+
+- [Block Lottos Advertising API](https://apis.io/apis/blocklottos-com/blocklottos-com-advertising-api/) — Display advertising API - submit, manage, and track ads on Block Lottos.
+- [Block Lottos Affiliate API](https://apis.io/apis/blocklottos-com/blocklottos-com-affiliate-api/) — The Affiliate API from Block Lottos — 1 operation(s) for affiliate.
+- [Block Lottos Agents API](https://apis.io/apis/blocklottos-com/blocklottos-com-agents-api/) — The Agents API from Block Lottos — 4 operation(s) for agents.
+- [Block Lottos Lottery API](https://apis.io/apis/blocklottos-com/blocklottos-com-lottery-api/) — Lottery data and transaction builders for Polygon Fortune Ledger and Base Future Ledger
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [Block Lottos](https://apis.io/servers/blocklottos-com/block-lottos/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Blocklottos Com Agentic Access](https://apis.io/agentic-access/blocklottos-com/blocklottos-com-agentic-access/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Blocklottos Com Openapi Overlay](https://apis.io/overlays/blocklottos-com/blocklottos-com-openapi-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Blocklottos Com Authentication](https://apis.io/security/blocklottos-com/blocklottos-com-authentication/)
+- [Blocklottos Com Domain Security](https://apis.io/security/blocklottos-com/blocklottos-com-domain-security/)
+- [Blocklottos Com Vulnerability Disclosure](https://apis.io/security/blocklottos-com/blocklottos-com-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Blocklottos Com Plans Pricing](https://apis.io/plans/blocklottos-com/blocklottos-com-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Blocklottos Com Rate Limits](https://apis.io/rate-limits/blocklottos-com/blocklottos-com-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://blocklottos.com/)
+- [Documentation](https://blocklottos.com/api-docs)
+- [Getting started](https://blocklottos.com/api-docs#ads-quickstart)
+- [API reference](https://blocklottos.com/api-docs)
+- [Pricing](https://blocklottos.com/advertise)
+- [Support](https://blocklottos.com/contact)
+- [Terms of service](https://blocklottos.com/terms)
+- [Privacy policy](https://blocklottos.com/privacy)
+
+## API Evangelist rating
+
+**Kin Score 55.6** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 63.3 |
+| Contract quality | 51.3 |
+| Contract governance | 18.2 |
+| Operational transparency | 47.4 |
+| Developer ergonomics | 52.4 |
+| Access clarity | 63.2 |
+
+**Agent readiness 39.6** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | verified |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | yes |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | flavored (partial credit) |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | — |
+
+**Regulatory alignment 34.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/blocklottos-com/](https://apis.io/providers/blocklottos-com/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Block Lottos: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/blocklottos-com/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
